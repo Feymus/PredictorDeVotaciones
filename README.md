@@ -1,1 +1,1 @@
-# PreditorDeVotaciones
+# PredictorDeVotaciones
