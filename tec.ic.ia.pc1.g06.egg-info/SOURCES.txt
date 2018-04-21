@@ -1,0 +1,13 @@
+README.md
+setup.py
+tec/ __init__.py
+tec.ic.ia.pc1.g06.egg-info/PKG-INFO
+tec.ic.ia.pc1.g06.egg-info/SOURCES.txt
+tec.ic.ia.pc1.g06.egg-info/dependency_links.txt
+tec.ic.ia.pc1.g06.egg-info/top_level.txt
+tec/ic/ __init__.py
+tec/ic/ia/ __init__.py
+tec/ic/ia/pc1/ __init__.py
+tec/ic/ia/pc1/g06.py
+tec/ic/ia/pc1/minutes.csv
+tec/ic/ia/pc1/properties.csv
