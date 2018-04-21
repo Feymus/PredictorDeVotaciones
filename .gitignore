@@ -1,0 +1,11 @@
+# excluir archivo de muestras en csv
+muestras.csv
+
+# Modulos de python compilados.
+*.pyc
+
+# Folder de distrbibucion del Setuptools.
+/dist/
+
+# Python egg metadata, generado por setuptools.
+/*.egg-info

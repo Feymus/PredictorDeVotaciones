@@ -13,42 +13,51 @@ ESTA_CARPETA = os.path.dirname(os.path.abspath(__file__))
 # Pueden ser cambiados por una dirección. (ejm "C:/archivo.csv")
 ARCHIVO_CENSOS = os.path.join(ESTA_CARPETA, "properties.csv")
 ARCHIVO_VOTOS = os.path.join(ESTA_CARPETA, "minutes.csv")
+ARCHIVO_VOTOS2 = os.path.join(ESTA_CARPETA, "minutes2.csv")
 votos = []
+votos2 = []
 censos = []
 datos = {
     "SAN JOSE": {
         "rango": [1, 20],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     },
     "ALAJUELA": {
         "rango": [21, 35],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     },
     "CARTAGO": {
         "rango": [36, 43],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     },
     "HEREDIA": {
         "rango": [44, 53],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     },
     "GUANACASTE": {
         "rango": [54, 64],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     },
     "PUNTARENAS": {
         "rango": [65, 75],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     },
     "LIMON": {
         "rango": [76, 81],
         "votos": {},
+        "votos2": {},
         "propiedades": {}
     }
 }
@@ -63,6 +72,7 @@ def cargar_csv():
 
     global censos
     global votos
+    global votos2
 
     with open(ARCHIVO_CENSOS, 'r') as csv_censos:
         csv_reader1 = csv.reader(csv_censos)
@@ -75,6 +85,12 @@ def cargar_csv():
 
         for j in csv_reader2:
             votos += [j]
+
+    with open(ARCHIVO_VOTOS2, 'r') as csv_votos2:
+        csv_reader3 = csv.reader(csv_votos2)
+
+        for j in csv_reader3:
+            votos2 += [j]
 
     cargar_datos()
 
@@ -89,6 +105,7 @@ def cargar_datos():
 
     global censos
     global votos
+    global votos2
 
     for key in datos:
         primer_canton = datos[key]["rango"][0]
@@ -97,8 +114,10 @@ def cargar_datos():
         for fila in range(primer_canton, ultimo_canton):
             canton = votos[fila][0]
             votos_en_canton = votos[fila][1:]
+            votos_en_canton2 = votos2[fila][1:]
             propiedades_en_canton = censos[fila][1:]
             datos[key]["votos"][canton] = votos_en_canton
+            datos[key]["votos2"][canton] = votos_en_canton2
             datos[key]["propiedades"][canton] = propiedades_en_canton
 
 
@@ -129,13 +148,18 @@ Salida: total de votos en dicha provincia
 '''
 
 
-def votes_quantity_by_province(province):
+def votes_quantity_by_province(province, round):
     province_votes = datos[province]["votos"]
     total_votes = 0
 
-    for key in datos[province]["votos"]:
-        canton = datos[province]["votos"][key]
-        total_votes += int(canton[15])
+    if (round == 1):
+        for key in datos[province]["votos"]:
+            canton = datos[province]["votos"][key]
+            total_votes += int(canton[15])
+    elif (round == 2):
+        for key in datos[province]["votos2"]:
+            canton = datos[province]["votos2"][key]
+            total_votes += int(canton[4])
 
     return total_votes
 
@@ -145,11 +169,11 @@ Retorna la cantidad de votos que hubo en todo el pais
 '''
 
 
-def votes_quatity_general():
+def votes_quatity_general(round):
     total_votes = 0
 
     for key in datos:
-        total_votes += votes_quantity_by_province(key)
+        total_votes += votes_quantity_by_province(key, round)
 
     return total_votes
 
@@ -166,13 +190,19 @@ Salida: lista con probabilidades
 '''
 
 
-def probs_by_province(total_votes, province, probs, cantons):
+def probs_by_province(total_votes, province, probs, cantons, round):
     province_cantons = datos[province]["votos"]
 
-    for key in datos[province]["votos"]:
-        canton = datos[province]["votos"][key]
-        cantons += [key]
-        probs += [int(canton[15])/total_votes]
+    if (round == 1):
+        for key in datos[province]["votos"]:
+            canton = datos[province]["votos"][key]
+            cantons += [key]
+            probs += [int(canton[15])/total_votes]
+    elif (round == 2):
+        for key in datos[province]["votos2"]:
+            canton = datos[province]["votos2"][key]
+            cantons += [key]
+            probs += [int(canton[4])/total_votes]
 
 
 '''
@@ -186,9 +216,9 @@ Salida: lista con probabilidades
 '''
 
 
-def general_probs(total_votes, probs, cantons):
+def general_probs(total_votes, probs, cantons, round):
     for key in datos:
-        probs_by_province(total_votes, key, probs, cantons)
+        probs_by_province(total_votes, key, probs, cantons, round)
 
 
 '''
@@ -199,25 +229,25 @@ Salida: Un canton elegido segun provincia o segun todas las provincias
 '''
 
 
-def pick_canton(province="NONE"):
+def pick_canton(round, province="NONE"):
     if province == "NONE":
 
-        total_votes = votes_quatity_general()
+        total_votes = votes_quatity_general(round)
 
         probs = []
         cantons = []
 
-        general_probs(total_votes, probs, cantons)
+        general_probs(total_votes, probs, cantons, round)
 
         return random_pick(cantons, probs)
 
     else:
-        total_votes = votes_quantity_by_province(province)
+        total_votes = votes_quantity_by_province(province, round)
 
         probs = []
         cantons = []
 
-        probs_by_province(total_votes, province, probs, cantons)
+        probs_by_province(total_votes, province, probs, cantons, round)
 
         return random_pick(cantons, probs)
 
@@ -332,24 +362,40 @@ def get_insured_pct(work, province, canton):
 '''
 
 
-def generated_vote(province, canton):
+def generated_vote(province, canton, round):
 
-    total_votes = int(datos[province]["votos"][canton][15])
+    total_votes = 0
     probs = []
+    options = []
 
-    for vote in datos[province]["votos"][canton]:
-        prob = int(vote)/total_votes
-        probs += [prob]
+    if (round == 1):
+        total_votes = int(datos[province]["votos"][canton][15])
 
-    probs = probs[:15]
-    options = [
-        "ACCESIBILIDAD SIN EXCLUSION", "ACCION CIUDADANA",
-        "ALIANZA DEMOCRATA CRISTIANA", "DE LOS TRABAJADORES", "FRENTE AMPLIO",
-        "INTEGRACION NACIONAL", "LIBERACION NACIONAL", "MOVIMIENTO LIBERTARIO",
-        "NUEVA GENERACION", "RENOVACION COSTARRICENSE",
-        "REPUBLICANO SOCIAL CRISTIANO", "RESTAURACION NACIONAL",
-        "UNIDAD SOCIAL CRISTIANA", "NULO", "BLANCO"
-    ]
+        for vote in datos[province]["votos"][canton]:
+            prob = int(vote)/total_votes
+            probs += [prob]
+
+        probs = probs[:15]
+        options = [
+            "ACCESIBILIDAD SIN EXCLUSION", "ACCION CIUDADANA",
+            "ALIANZA DEMOCRATA CRISTIANA", "DE LOS TRABAJADORES",
+            "FRENTE AMPLIO", "INTEGRACION NACIONAL", "LIBERACION NACIONAL",
+            "MOVIMIENTO LIBERTARIO", "NUEVA GENERACION",
+            "RENOVACION COSTARRICENSE", "REPUBLICANO SOCIAL CRISTIANO",
+            "RESTAURACION NACIONAL", "UNIDAD SOCIAL CRISTIANA", "NULO",
+            "BLANCO"
+        ]
+    elif (round == 2):
+        total_votes = int(datos[province]["votos2"][canton][4])
+
+        for vote in datos[province]["votos2"][canton]:
+            prob = int(vote)/total_votes
+            probs += [prob]
+
+        probs = probs[:4]
+        options = [
+            "ACCION CIUDADANA", "RESTAURACION NACIONAL", "NULO", "BLANCO"
+        ]
 
     return random_pick(options, probs)
 
@@ -362,7 +408,7 @@ Salida: una lista con los datos de la muestra
 '''
 
 
-def generate_sample_by_province(province, canton):
+def generate_sample_by_province(province, canton, round):
     sample = []
 
     total_population = datos[province]["propiedades"][canton][0]
@@ -462,7 +508,7 @@ def generate_sample_by_province(province, canton):
         [shared_head_pct, not_shared_head_pct]
     )
 
-    vote = generated_vote(province, canton)
+    vote = generated_vote(province, canton, round)
 
     sample += [
         province, canton, total_population, surface, density, urban,
@@ -482,14 +528,14 @@ Salida: lista con la muestra generada
 '''
 
 
-def generate_sample(province="NONE"):
+def generate_sample(round, province="NONE"):
     if province == "NONE":
-        canton = pick_canton()
+        canton = pick_canton(round)
         province = search_province_by_canton(canton)
-        return generate_sample_by_province(province, canton)
+        return generate_sample_by_province(province, canton, round)
     else:
-        canton = pick_canton(province)
-        return generate_sample_by_province(province, canton)
+        canton = pick_canton(round, province)
+        return generate_sample_by_province(province, canton, round)
 
 
 '''
@@ -499,12 +545,12 @@ Salida: lista con las muestras
 '''
 
 
-def generar_muestra_pais(n):
+def generar_muestra_pais(n, round):
     cargar_csv()
     muestras = []
 
     for muestra in range(0, n):
-        muestras += [generate_sample()]
+        muestras += [generate_sample(round)]
 
     return muestras
 
@@ -518,13 +564,13 @@ Salida: lista con las muestras
 '''
 
 
-def generar_muestra_provincia(n, nombre_provincia):
+def generar_muestra_provincia(n, nombre_provincia, round):
     nombre_provincia = nombre_provincia.upper()
     cargar_csv()
     muestras = []
 
     for muestra in range(0, n):
-        muestras += [generate_sample(nombre_provincia)]
+        muestras += [generate_sample(nombre_provincia, round)]
 
     return muestras
 
@@ -746,7 +792,9 @@ def main():
         "Jefatura compartida", "Voto"
     ]
 
-    muestras = generar_muestra_pais(25000)
+    muestras = generar_muestra_pais(25000, 2)
+    muestras = [indicadores] + muestras
+    pasar_a_csv(muestras)
 
 
 if __name__ == '__main__':
