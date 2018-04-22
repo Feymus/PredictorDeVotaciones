@@ -1,5 +1,7 @@
 # excluir archivo de muestras en csv
 muestras.csv
+muestras1.csv
+muestras2.csv
 
 # Modulos de python compilados.
 *.pyc
