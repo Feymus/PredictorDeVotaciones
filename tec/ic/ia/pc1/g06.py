@@ -541,16 +541,26 @@ def generate_sample(round, province="NONE"):
 '''
 Retorna una lista con diferentes muestras de votantes generadas aleatoriamente
 Entrada: cantidad de muestras a generar
-Salida: lista con las muestras
+Salida: lista con las muestras en la posicion 0 tendra los de la primera ronda
+en la posicion 1 los de la segunda
 '''
 
 
-def generar_muestra_pais(n, round):
+def generar_muestra_pais(n):
     cargar_csv()
     muestras = []
+    muestrasTmp = []
 
+    # Generar muestras para la primer ronda
     for muestra in range(0, n):
-        muestras += [generate_sample(round)]
+        muestrasTmp += [generate_sample(1)]
+
+    muestras += [muestrasTmp]
+    muestrasTmp = []
+    # Generar muestras para la segunda ronda
+    for muestra in range(0, n):
+        muestrasTmp += [generate_sample(2)]
+    muestras += [muestrasTmp]
 
     return muestras
 
@@ -560,17 +570,27 @@ Retorna una lista con diferentes muestras de votantes generadas aleatoriamente
         para cierta provincia
 Entrada: cantidad de muestras a generar
          nombre de la provincia
-Salida: lista con las muestras
+Salida: lista con las muestras en la posicion 0 tendra los de la primera ronda
+en la posicion 1 los de la segunda
 '''
 
 
-def generar_muestra_provincia(n, nombre_provincia, round):
+def generar_muestra_provincia(n, nombre_provincia):
     nombre_provincia = nombre_provincia.upper()
     cargar_csv()
     muestras = []
+    muestrasTmp = []
 
+    # Generar muestras para la primer ronda
     for muestra in range(0, n):
-        muestras += [generate_sample(nombre_provincia, round)]
+        muestrasTmp += [generate_sample(1, nombre_provincia)]
+
+    muestras += [muestrasTmp]
+    muestrasTmp = []
+    # Generar muestras para la segunda ronda
+    for muestra in range(0, n):
+        muestrasTmp += [generate_sample(2, nombre_provincia)]
+    muestras += [muestrasTmp]
 
     return muestras
 
@@ -584,11 +604,20 @@ Salida: un csv con todas las muestras
 
 def pasar_a_csv(muestras):
 
-    with open("./muestras.csv", "w", newline='') as file:
+    with open("./muestras1.csv", "w", newline='') as file:
 
         writer = csv.writer(file, delimiter=",")
 
-        for muestra in muestras:
+        writer.writerow(muestras[0])
+        for muestra in muestras[1]:
+            writer.writerow(muestra)
+
+    with open("./muestras2.csv", "w", newline='') as file:
+
+        writer = csv.writer(file, delimiter=",")
+
+        writer.writerow(muestras[0])
+        for muestra in muestras[2]:
             writer.writerow(muestra)
 
 
@@ -792,8 +821,8 @@ def main():
         "Jefatura compartida", "Voto"
     ]
 
-    muestras = generar_muestra_pais(25000, 2)
-    muestras = [indicadores] + muestras
+    muestras = generar_muestra_pais(25000)
+    muestras = [indicadores] + [muestras[0]] + [muestras[1]]
     pasar_a_csv(muestras)
 
 
