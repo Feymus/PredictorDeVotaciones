@@ -148,18 +148,13 @@ Salida: total de votos en dicha provincia
 '''
 
 
-def votes_quantity_by_province(province, round):
+def votes_quantity_by_province(province):
     province_votes = datos[province]["votos"]
     total_votes = 0
 
-    if (round == 1):
-        for key in datos[province]["votos"]:
-            canton = datos[province]["votos"][key]
-            total_votes += int(canton[15])
-    elif (round == 2):
-        for key in datos[province]["votos2"]:
-            canton = datos[province]["votos2"][key]
-            total_votes += int(canton[4])
+    for key in datos[province]["votos"]:
+        canton = datos[province]["votos"][key]
+        total_votes += int(canton[15])
 
     return total_votes
 
@@ -169,11 +164,11 @@ Retorna la cantidad de votos que hubo en todo el pais
 '''
 
 
-def votes_quatity_general(round):
+def votes_quantity_general():
     total_votes = 0
 
     for key in datos:
-        total_votes += votes_quantity_by_province(key, round)
+        total_votes += votes_quantity_by_province(key)
 
     return total_votes
 
@@ -190,19 +185,13 @@ Salida: lista con probabilidades
 '''
 
 
-def probs_by_province(total_votes, province, probs, cantons, round):
+def probs_by_province(total_votes, province, probs, cantons):
     province_cantons = datos[province]["votos"]
 
-    if (round == 1):
-        for key in datos[province]["votos"]:
-            canton = datos[province]["votos"][key]
-            cantons += [key]
-            probs += [int(canton[15])/total_votes]
-    elif (round == 2):
-        for key in datos[province]["votos2"]:
-            canton = datos[province]["votos2"][key]
-            cantons += [key]
-            probs += [int(canton[4])/total_votes]
+    for key in datos[province]["votos"]:
+        canton = datos[province]["votos"][key]
+        cantons += [key]
+        probs += [int(canton[15])/total_votes]
 
 
 '''
@@ -216,9 +205,9 @@ Salida: lista con probabilidades
 '''
 
 
-def general_probs(total_votes, probs, cantons, round):
+def general_probs(total_votes, probs, cantons):
     for key in datos:
-        probs_by_province(total_votes, key, probs, cantons, round)
+        probs_by_province(total_votes, key, probs, cantons)
 
 
 '''
@@ -229,25 +218,25 @@ Salida: Un canton elegido segun provincia o segun todas las provincias
 '''
 
 
-def pick_canton(round, province="NONE"):
+def pick_canton(province="NONE"):
     if province == "NONE":
 
-        total_votes = votes_quatity_general(round)
+        total_votes = votes_quantity_general()
 
         probs = []
         cantons = []
 
-        general_probs(total_votes, probs, cantons, round)
+        general_probs(total_votes, probs, cantons)
 
         return random_pick(cantons, probs)
 
     else:
-        total_votes = votes_quantity_by_province(province, round)
+        total_votes = votes_quantity_by_province(province)
 
         probs = []
         cantons = []
 
-        probs_by_province(total_votes, province, probs, cantons, round)
+        probs_by_province(total_votes, province, probs, cantons)
 
         return random_pick(cantons, probs)
 
@@ -408,7 +397,7 @@ Salida: una lista con los datos de la muestra
 '''
 
 
-def generate_sample_by_province(province, canton, round):
+def generate_sample_by_province(province, canton):
     sample = []
 
     total_population = datos[province]["propiedades"][canton][0]
@@ -508,13 +497,14 @@ def generate_sample_by_province(province, canton, round):
         [shared_head_pct, not_shared_head_pct]
     )
 
-    vote = generated_vote(province, canton, round)
+    vote1 = generated_vote(province, canton, 1)
+    vote2 = generated_vote(province, canton, 2)
 
     sample += [
         province, canton, total_population, surface, density, urban,
         gender, age, dependent, literate, avg_scholarship, regular_edu, work,
         insured, individual_houses, occupants_avg, condition, crowded,
-        born_abroad, handicapped, female_head, shared_head, vote
+        born_abroad, handicapped, female_head, shared_head, vote1, vote2
     ]
 
     return sample
@@ -528,14 +518,14 @@ Salida: lista con la muestra generada
 '''
 
 
-def generate_sample(round, province="NONE"):
+def generate_sample(province="NONE"):
     if province == "NONE":
-        canton = pick_canton(round)
+        canton = pick_canton()
         province = search_province_by_canton(canton)
-        return generate_sample_by_province(province, canton, round)
+        return generate_sample_by_province(province, canton)
     else:
-        canton = pick_canton(round, province)
-        return generate_sample_by_province(province, canton, round)
+        canton = pick_canton(province)
+        return generate_sample_by_province(province, canton)
 
 
 '''
@@ -549,18 +539,9 @@ en la posicion 1 los de la segunda
 def generar_muestra_pais(n):
     cargar_csv()
     muestras = []
-    muestrasTmp = []
 
-    # Generar muestras para la primer ronda
     for muestra in range(0, n):
-        muestrasTmp += [generate_sample(1)]
-
-    muestras += [muestrasTmp]
-    muestrasTmp = []
-    # Generar muestras para la segunda ronda
-    for muestra in range(0, n):
-        muestrasTmp += [generate_sample(2)]
-    muestras += [muestrasTmp]
+        muestras += [generate_sample()]
 
     return muestras
 
@@ -579,18 +560,9 @@ def generar_muestra_provincia(n, nombre_provincia):
     nombre_provincia = nombre_provincia.upper()
     cargar_csv()
     muestras = []
-    muestrasTmp = []
 
-    # Generar muestras para la primer ronda
     for muestra in range(0, n):
-        muestrasTmp += [generate_sample(1, nombre_provincia)]
-
-    muestras += [muestrasTmp]
-    muestrasTmp = []
-    # Generar muestras para la segunda ronda
-    for muestra in range(0, n):
-        muestrasTmp += [generate_sample(2, nombre_provincia)]
-    muestras += [muestrasTmp]
+        muestras += [generate_sample(nombre_provincia)]
 
     return muestras
 
@@ -604,20 +576,11 @@ Salida: un csv con todas las muestras
 
 def pasar_a_csv(muestras):
 
-    with open("./muestras1.csv", "w", newline='') as file:
+    with open("./muestras.csv", "w", newline='') as file:
 
         writer = csv.writer(file, delimiter=",")
 
-        writer.writerow(muestras[0])
-        for muestra in muestras[1]:
-            writer.writerow(muestra)
-
-    with open("./muestras2.csv", "w", newline='') as file:
-
-        writer = csv.writer(file, delimiter=",")
-
-        writer.writerow(muestras[0])
-        for muestra in muestras[2]:
+        for muestra in muestras:
             writer.writerow(muestra)
 
 
@@ -818,11 +781,11 @@ def main():
         "Escolaridad regular", "Trabaja", "Asegurado",
         "Cant. casas individuales", "Ocupantes promedio", "Condicion",
         "Hacinada", "Nacido en...", "Discapacitado", "Jefatura femenina",
-        "Jefatura compartida", "Voto"
+        "Jefatura compartida", "Voto ronda 1", "Voto ronda 2"
     ]
 
     muestras = generar_muestra_pais(25000)
-    muestras = [indicadores] + [muestras[0]] + [muestras[1]]
+    muestras = [indicadores] + muestras
     pasar_a_csv(muestras)
 
 
