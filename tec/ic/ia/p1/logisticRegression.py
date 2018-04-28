@@ -4,11 +4,12 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
+from Normalizer import Normalizer
 from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
     generar_muestra_provincia
 )
-import svm
+
 
 political_party = ['ACCESIBILIDAD SIN EXCLUSION','ACCION CIUDADANA',
                    'ALIANZA DEMOCRATA CRISTIANA','DE LOS TRABAJADORES',
@@ -35,50 +36,84 @@ def replace_political_party(party):
 #y = data["trainingClassesSecond"]
 #test_y = replace_political_party(data["testingClassesSecond"]).reshape(-1,1)
 #test_y = np.array(test_y)
-    
 
-def LogicRegression(scale, epochs, cant, l_regulizer):
+def logistic_regression_r1(cant, scale, epochs, test_percent, l_regulizer):
+    print("\n------FIRST ROUND------\n")
     
     samples = generar_muestra_pais(cant)
+    quantity_for_testing = int(cant*0.2)
+    normalizer = Normalizer()
+    data = normalizer.prepare_data(samples, quantity_for_testing)
 
-    data = svm.get_data(samples, 0.2)
-    converter = svm.convert_data(data)
+    train_x = data["trainingFeatures"]
+    train_y = data["trainingClassesFirst"]
+    test_x = data["testingFeatures"]
+    test_y = data["testingClassesFirst"]
+    logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer)
 
-    x = data["trainingFeatures"]
-    #test_x = data["testingFeatures"]
 
-    y = data["trainingClassesSecond"]
-    #test_y = replace_political_party(data["testingClassesSecond"]).reshape(-1,1)
-    #test_y = np.array(test_y)
-    
-    learning_rate = 0.0001
+def logistic_regression_r2(cant, scale, epochs, test_percent, l_regulizer):
+    print("\n------SECOND ROUND------\n")
+
+    samples = generar_muestra_pais(cant)
+    quantity_for_testing = int(cant*0.2)
+    normalizer = Normalizer()
+    data = normalizer.prepare_data(samples, quantity_for_testing)
+
+    train_x = data["trainingFeatures"]
+    train_y = data["trainingClassesSecond"]
+    test_x = data["testingFeatures"]
+    test_y = data["testingClassesSecond"]
+    logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer)
+
+
+def logistic_regression_r2_r1(cant, scale, epochs, test_percent, l_regulizer):
+    print("\n------THIRD ROUND------\n")
+
+    samples = generar_muestra_pais(cant)
+    quantity_for_testing = int(cant*0.2)
+    normalizer = Normalizer()
+    data = normalizer.prepare_data(samples, quantity_for_testing)
+
+    train_x = data["trainingFeaturesFirstInclude"]
+    train_y = data["trainingClassesSecond"]
+    test_x = data["testingFeaturesFirstInclude"]
+    test_y = data["testingClassesSecond"]
+    logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer)
+
+
+def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer):
+ 
+    learning_rate = 0.01
     print("Learning rate: ",learning_rate)
     print("Scale: ", scale,"\n")
     print("Epochs: ", epochs)
-    data = svm.get_data(samples, 0.2)
-    converter = svm.convert_data(data)
     display_step = 1
 
     oneHot = OneHotEncoder()
-    y = replace_political_party(y).reshape(-1,1)
-    oneHot.fit(y)
-    y = oneHot.transform(y).toarray()
+    train_y = replace_political_party(train_y).reshape(-1,1)
+    oneHot.fit(train_y)
+    train_y = oneHot.transform(train_y).toarray()
 
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size = 0.1,
-                                                        random_state=0)
+    test_y = replace_political_party(test_y).reshape(-1,1)
+    oneHot.fit(test_y)
+    test_y = oneHot.transform(test_y).toarray()
+
+    #train_x, test_x, train_y, test_y = train_test_split(x, y, test_size = test_percent, random_state=0)
+
     # let's print shape of each train and testing
     print("Shape of X_train: ", train_x.shape)
     print("Shape of y_train: ", train_y.shape)
     print("Shape of X_test: ", test_x.shape)
     print("Shape of y_test", test_y.shape)
     print(" ")
-    
+
     shape_x = train_x.shape[1]
     shape_y = train_y.shape[1]
-
+    
     with tf.name_scope("Declaring_placeholder"):
-        X = tf.placeholder(tf.float32, [None, shape_x])
-        y = tf.placeholder(tf.float32, [None, shape_y])
+        X = tf.placeholder(tf.float32, shape = [None, shape_x])
+        y = tf.placeholder(tf.float32, shape = [None, None])
 
     #Weights
     with tf.name_scope("Declaring_variables"):
@@ -96,18 +131,19 @@ def LogicRegression(scale, epochs, cant, l_regulizer):
         if (l_regulizer == 1):
             weights = tf.trainable_variables() #all variables of the graph
             l1_regularizer = tf.contrib.layers.l1_regularizer(scale = scale, scope=None)
-            regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, weights)
+            regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer,
+                                                                            weights)
             regularized_loss = cost + regularization_penalty
-
+            print("Using L1 Regulizer")
+            
         if (l_regulizer == 2):
             weights = tf.trainable_variables() #all variables of the graph
             l2_regularizer = tf.contrib.layers.l2_regularizer(scale = scale, scope=None)
-            regularization_penalty = tf.contrib.layers.apply_regularization(l2_regularizer, weights)
+            regularization_penalty = tf.contrib.layers.apply_regularization(l2_regularizer,
+                                                                            weights)
             regularized_loss = cost + regularization_penalty
-
-        else:
-            print("Regulizer doesn't exist...")
-
+            print("Using L2 Regulizer")
+            
     with tf.name_scope("declaring_gradient_descent"):
         # optimizer
         # we use gradient descent for our optimizer 
@@ -135,25 +171,44 @@ def LogicRegression(scale, epochs, cant, l_regulizer):
             print("Accuracy:", accuracy.eval({X: test_x, y: test_y}))
         
 
-LogicRegression(0.00000001, 100, 2000, 1)
-LogicRegression(0.00000001, 100, 2000, 2)
-# The data is turned to arrys of numbers only
-#data = svm.get_data(samples, 0.2)
-#converter = svm.convert_data(data)
 
+#data = svm.get_data(generar_muestra_pais(1000), 0.2)
+#converter = svm.convert_data(data) 
+#logic_regression(x, y, 0.00000001, 100, 20, 1)
+#logic_regression(0.00000001, 100, 2000, 20, 2)
+
+logistic_regression_r1(3000, 0.01, 100, 20, 1)
+logistic_regression_r2(3000, 0.01, 100, 20, 2)
+logistic_regression_r2_r1(3000, 0.01, 100, 20, 2)
+
+
+# The data is turned to arrys of numbers only
+
+
+##ENTRENAMIENDO PRIMERA RONDA
 ##print(data["trainingFeatures"])
-####print(data["testingFeatures"])
-####print(data["trainingFeaturesFirstInclude"])
-####print(data["testingFeaturesFirstInclude"])
-##oneHot = OneHotEncoder()
-##x = replace_political_party(data["trainingClassesFirst"]).reshape(-1,1)
-##print(x)
-##oneHot.fit(x)
-##x = oneHot.transform(x).toarray()
-##print(x)
-##print(x.shape)
-##print(data["trainingClassesSecond"])
+##print(data["trainingClassesFirst"])
+
+##PRUEBA PRIMERA RONDA
+##print(data["testingFeatures"])
 ##print(data["testingClassesFirst"])
+
+##SEGUNDA RONDA
+##print(data["trainingFeatures"])
+##print(data["trainingClassesSecond"])
+
+##print(data["testingFeatures"])
+##print(data["testingClassesSecond"])
+
+##LA RARA
+#print(data["trainingFeaturesFirstInclude"])
+#print(data["trainingClassesSecond"])
+
+##print(data["testingFeaturesFirstInclude"])
+##print(data["trainingClassesSecond"])
+
+
+
 
 
 
