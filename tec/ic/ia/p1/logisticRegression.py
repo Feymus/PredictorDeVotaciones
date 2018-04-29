@@ -10,7 +10,37 @@ from tec.ic.ia.pc1.g06 import (
     generar_muestra_provincia
 )
 
+"""
+Set de datos a utilizar
 
+------ENTRENAMIENDO PRIMERA RONDA------
+data["trainingFeatures"]
+data["trainingClassesFirst"]
+
+------PRUEBA PRIMERA RONDA------
+data["testingFeatures"]
+data["testingClassesFirst"]
+
+------ENTRENAMIENTO SEGUNDA RONDA------
+data["trainingFeatures"]
+data["trainingClassesSecond"]
+
+------PRUEBA SEGUNDA RONDA------
+data["testingFeatures"]
+data["testingClassesSecond"]
+
+------ENTRENAMIENTO CON PRIMERA Y SEGUNDA RONDA------
+data["trainingFeaturesFirstInclude"]
+data["trainingClassesSecond"]
+
+------PRUEBA CON PRIMERA Y SEGUNDA RONDA------
+data["testingFeaturesFirstInclude"]
+data["trainingClassesSecond"]
+"""
+
+"""
+Lista con los Partidos Políticos
+"""
 political_party = ['ACCESIBILIDAD SIN EXCLUSION','ACCION CIUDADANA',
                    'ALIANZA DEMOCRATA CRISTIANA','DE LOS TRABAJADORES',
                    'FRENTE AMPLIO','INTEGRACION NACIONAL','LIBERACION NACIONAL',
@@ -29,14 +59,9 @@ def replace_political_party(party):
         party[i] = political_party.index(party[i].upper())
     return party
 
-
-#x = data["trainingFeatures"]
-#test_x = data["testingFeatures"]
-
-#y = data["trainingClassesSecond"]
-#test_y = replace_political_party(data["testingClassesSecond"]).reshape(-1,1)
-#test_y = np.array(test_y)
-
+"""
+Regresion logistica para la primera ronda
+"""
 def logistic_regression_r1(cant, scale, epochs, test_percent, l_regulizer):
     print("\n------FIRST ROUND------\n")
     
@@ -51,7 +76,9 @@ def logistic_regression_r1(cant, scale, epochs, test_percent, l_regulizer):
     test_y = data["testingClassesFirst"]
     logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer)
 
-
+"""
+Regresion logistica para la segunda ronda
+"""
 def logistic_regression_r2(cant, scale, epochs, test_percent, l_regulizer):
     print("\n------SECOND ROUND------\n")
 
@@ -66,7 +93,9 @@ def logistic_regression_r2(cant, scale, epochs, test_percent, l_regulizer):
     test_y = data["testingClassesSecond"]
     logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer)
 
-
+"""
+Regresion logistica para la primera y segunda ronda
+"""
 def logistic_regression_r2_r1(cant, scale, epochs, test_percent, l_regulizer):
     print("\n------THIRD ROUND------\n")
 
@@ -81,10 +110,12 @@ def logistic_regression_r2_r1(cant, scale, epochs, test_percent, l_regulizer):
     test_y = data["testingClassesSecond"]
     logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer)
 
-
+"""
+Funcion de Regresion logistica
+"""
 def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer):
  
-    learning_rate = 0.01
+    learning_rate = 0.05
     print("Learning rate: ",learning_rate)
     print("Scale: ", scale,"\n")
     print("Epochs: ", epochs)
@@ -101,12 +132,12 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
 
     #train_x, test_x, train_y, test_y = train_test_split(x, y, test_size = test_percent, random_state=0)
 
-    # let's print shape of each train and testing
-    print("Shape of X_train: ", train_x.shape)
-    print("Shape of y_train: ", train_y.shape)
-    print("Shape of X_test: ", test_x.shape)
-    print("Shape of y_test", test_y.shape)
-    print(" ")
+    #Descomentar para ver el shape de cada test y train
+    #print("Shape of X_train: ", train_x.shape)
+    #print("Shape of y_train: ", train_y.shape)
+    #print("Shape of X_test: ", test_x.shape)
+    #print("Shape of y_test", test_y.shape)
+    #print(" ")
 
     shape_x = train_x.shape[1]
     shape_y = train_y.shape[1]
@@ -121,11 +152,11 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
         b = tf.Variable(tf.zeros([shape_y]))
 
     with tf.name_scope("Declaring_functions"):
-        y_ = tf.sigmoid(tf.add(tf.matmul(X, W), b))
+        y_ = tf.nn.softmax(tf.add(tf.matmul(X, W), b))
 
     with tf.name_scope("calculating_cost"):
-        # calculating cost
-        cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=y_))
+        # calculando costo
+        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=y_))
 
     with tf.name_scope("regulizer"):
         if (l_regulizer == 1):
@@ -146,67 +177,34 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
             
     with tf.name_scope("declaring_gradient_descent"):
         # optimizer
-        # we use gradient descent for our optimizer 
+        # usamos gradient descent para optimizar
         optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(regularized_loss)
 
     with tf.name_scope("starting_tensorflow_session"):
         with tf.Session() as sess:
-            # initialize all variables
+            # inicializa las variables
             sess.run(tf.global_variables_initializer())
             for epoch in range(epochs):
                 cost_in_each_epoch = 0
-                # let's start training
+                # empieza el entrenamiento
                 _, c = sess.run([optimizer, cost], feed_dict={X: train_x, y: train_y})
                 cost_in_each_epoch += c
 ##                # you can uncomment next two lines of code for printing cost when training
 ##                if (epoch+1) % display_step == 0:
 ##                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
             
-            print("Optimization Finished!")
+            #print("Optimization Finished!")
 
             # Test model
             correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(y, 1))
-            # Calculate accuracy for 3000 examples
+            # calcula el accuracy
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
             print("Accuracy:", accuracy.eval({X: test_x, y: test_y}))
         
 
-
-#data = svm.get_data(generar_muestra_pais(1000), 0.2)
-#converter = svm.convert_data(data) 
-#logic_regression(x, y, 0.00000001, 100, 20, 1)
-#logic_regression(0.00000001, 100, 2000, 20, 2)
-
-logistic_regression_r1(3000, 0.01, 100, 20, 1)
-logistic_regression_r2(3000, 0.01, 100, 20, 2)
-logistic_regression_r2_r1(3000, 0.01, 100, 20, 2)
-
-
-# The data is turned to arrys of numbers only
-
-
-##ENTRENAMIENDO PRIMERA RONDA
-##print(data["trainingFeatures"])
-##print(data["trainingClassesFirst"])
-
-##PRUEBA PRIMERA RONDA
-##print(data["testingFeatures"])
-##print(data["testingClassesFirst"])
-
-##SEGUNDA RONDA
-##print(data["trainingFeatures"])
-##print(data["trainingClassesSecond"])
-
-##print(data["testingFeatures"])
-##print(data["testingClassesSecond"])
-
-##LA RARA
-#print(data["trainingFeaturesFirstInclude"])
-#print(data["trainingClassesSecond"])
-
-##print(data["testingFeaturesFirstInclude"])
-##print(data["trainingClassesSecond"])
-
+#logistic_regression_r1(50000, 0.01, 100, 20, 2)
+#logistic_regression_r2(50000, 0.01, 100, 20, 2)
+#logistic_regression_r2_r1(50000, 0.01, 100, 20, 2)
 
 
 
