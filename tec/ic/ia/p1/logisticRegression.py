@@ -193,21 +193,19 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
 ##                if (epoch+1) % display_step == 0:
 ##                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
             
-            #print("Optimization Finished!")
+            print("Optimization Finished!")
 
             # Test model
             correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(y, 1))
             # calcula el accuracy
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-            print("Accuracy:", accuracy.eval({X: test_x, y: test_y}))
+            print("Accuracy:", accuracy.eval({X: test_x, y: test_y})*100)
         
 
-#logistic_regression_r1(50000, 0.01, 100, 20, 2)
-#logistic_regression_r2(50000, 0.01, 100, 20, 2)
-#logistic_regression_r2_r1(50000, 0.01, 100, 20, 2)
-
-
-
+logistic_regression_r1(50000, 0.0001, 300, 20, 2)
+logistic_regression_r2(50000, 0.0001, 300, 20, 1)
+logistic_regression_r2(50000, 0.0001, 300, 20, 2)
+logistic_regression_r2_r1(50000, 0.0001, 300, 20, 2)
 
 
 
