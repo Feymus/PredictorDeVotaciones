@@ -116,13 +116,30 @@ class Normalizer(object):
             if "Classes" not in key:
                 data[key] = self.convert_to_dict_list(data[key])
 
-        data["trainingFeatures"] = self.converter.fit_transform(
+        self.converter.fit(
+            np.append(
+                data["trainingFeatures"],
+                data["testingFeatures"],
+                axis=0
+            )
+        )
+
+        data["trainingFeatures"] = self.converter.transform(
             data["trainingFeatures"]
         )
         data["testingFeatures"] = self.converter.transform(
             data["testingFeatures"]
         )
-        data["trainingFeaturesFirstInclude"] = self.converter.fit_transform(
+
+        self.converter.fit(
+            np.append(
+                data["trainingFeaturesFirstInclude"],
+                data["testingFeaturesFirstInclude"],
+                axis=0
+            )
+        )
+
+        data["trainingFeaturesFirstInclude"] = self.converter.transform(
             data["trainingFeaturesFirstInclude"]
         )
         data["testingFeaturesFirstInclude"] = self.converter.transform(
