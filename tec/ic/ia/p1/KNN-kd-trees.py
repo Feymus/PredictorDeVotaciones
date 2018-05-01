@@ -54,7 +54,7 @@ def printTree(tree):
 
 
 def knn(point, node):
-    return 
+    return
 
 def kd_trees(list_points, depth):
     if not list_points:
@@ -72,14 +72,14 @@ def kd_trees(list_points, depth):
         node.right=kd_trees(list_points[median+1:],depth+1)
         return node
 
-  
+
 def distance(point1, point2):
 
     values=[]
     for i in range(len(point1)):
         d_temp=point1[i]-point2[i]
         values+=[d_temp*d_temp]
-    
+
     return sqrt(sum(values))
 
 def closest_point(all_points, new_point):
@@ -158,19 +158,19 @@ def kdtree_closest_point(root, point, depth=0,kn=[]):
                                                 point,
                                                 depth + 1,kn),
                            root.dimension)
-   
+
 
     if distance(point, best) > abs(point[axis] - root.dimension[axis]):
-        
+
         best = closer_distance(point,
                                kdtree_closest_point(opposite_branch,
                                                     point,
                                                     depth + 1,kn),
                                best)
-       
-   
+
+
     kn_final.append([best])
-    print(best)
+
     return best
 
 
@@ -179,22 +179,20 @@ def top_points(point,k):
     points=[]
     distance_temp_list=[]
     for i in kn:
-        print()
-        if(len(points)==k):
-            return points
+
+
+        if (len(distance_temp_list)<k):
+            distance_temp=distance(point, i[0])
+            points+=[i[0].tolist()]
+            distance_temp_list+=[distance_temp]
         else:
-            if (len(distance_temp_list)<k):
-                distance_temp=distance(point, i[0])
+            if(max(distance_temp_list)>distance(point, i[0])):
+                indx=distance_temp_list.index(max(distance_temp_list))
+                distance_temp_list.pop(indx)
+                points.pop(indx)
+                distance_temp+=distance(point, i[0])
                 points+=[i[0].tolist()]
                 distance_temp_list+=[distance_temp]
-            else: 
-                if(max(distance_temp_list)<distance(point, i[0])):
-                    indx=distance_temp_list.index(max(distance_temp_list))
-                    distance_temp_list.pop(indx)
-                    points.pop(indx)
-                    distance_temp=distance(point, i[0])
-                    points+=[i[0].tolist()]
-                    distance_temp_list+=[distance_temp]
 
     return points
 
@@ -203,22 +201,22 @@ def best_vote_percent(neightboards):
     votes=0
     best=""
     for i in temp_list:
-        
+
         vote_temp=neightboards.count(i)
         if (vote_temp>=votes):
             votes=vote_temp
             best=i
-    return best   
+    return best
 
 
 
 values3=[["Full","Thai","no"],["Full","French","no"],["Some","French","yes"],["Full","Thai","yes"],["Full","Italian","no"],["Some","Burger","yes"],["None","Burger","no"], ["Some","Italian","yes"],["Some","Thai","yes"],["Full","Burger","no"],["None","Thai","no"],["Full","Burger","yes"]]
 
-lenData = 300
+lenData = 600
 samples = generar_muestra_pais(lenData)
 
 normalizer=Normalizer()
-samples_normalizar=normalizer.prepare_data(samples, 100)
+samples_normalizar=normalizer.prepare_data(samples, 0.2)
 
 r1=samples_normalizar.get('trainingFeatures')
 r1_tests=samples_normalizar.get('testingFeatures')
@@ -230,40 +228,37 @@ r1_tree=kd_trees(list(r1),0)
 fail=0
 win=0
 for i in r1_tests.tolist():
-    
+
     mini_test=kdtree_closest_point(r1_tree,i,0,[]).tolist()
-    print(mini_test)
+
+
     pos_test=r1_tests.tolist().index(i)
     e=r1_tests_results.tolist()[pos_test]
     neightboards=[]
-    for j in top_points(i,3):
+    for j in top_points(i,15):
         pos=r1.tolist().index(j)
         o=r1_results.tolist()[pos]
 
         neightboards+=[o]
     print(neightboards)
-    print(best_vote_percent(neightboards))
-    print(e)
+
     kn_final=[]
-
-
-
-        
-'''
-    if(o==e):
+    if (best_vote_percent(neightboards)==e):
         win+=1
     else:
         fail+=1
-   
-  
+
+
+
+
 
 
 print(win)
 print(fail)
 print((len(r1_tests)-fail)/len(r1_tests)*100)
-'''
 
-'''
+
+
 r2=samples_normalizar.get('trainingFeaturesFirstInclude')
 r2_tests=samples_normalizar.get('testingFeaturesFirstInclude')
 r2_results=samples_normalizar.get('trainingClassesSecond')
@@ -273,21 +268,28 @@ r2_tests_results=samples_normalizar.get('testingClassesSecond')
 r2_tree=kd_trees(list(r2),0)
 fail=0
 win=0
-for j in r2_tests.tolist():
 
-    mini_test=kdtree_closest_point(r2_tree,j,0,[]).tolist()
+for i in r2_tests.tolist():
 
-    
-    pos=r2.tolist().index(mini_test)
-    pos_test=r2_tests.tolist().index(j)
-    o=r2_results.tolist()[pos]
+    mini_test=kdtree_closest_point(r2_tree,i,0,[]).tolist()
+
+
+    pos_test=r2_tests.tolist().index(i)
     e=r2_tests_results.tolist()[pos_test]
-    if(o==e):
+    neightboards=[]
+    for j in top_points(i,15):
+        pos=r2.tolist().index(j)
+        o=r2_results.tolist()[pos]
+
+        neightboards+=[o]
+    print(neightboards)
+
+    kn_final=[]
+    if (best_vote_percent(neightboards)==e):
         win+=1
     else:
         fail+=1
-    
+
 print(win)
 print(fail)
 print((len(r2_tests)-fail)/len(r2_tests)*100)
-'''
