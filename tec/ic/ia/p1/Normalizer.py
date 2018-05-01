@@ -20,6 +20,7 @@ class Normalizer(object):
         ]
         self.converter = DictVectorizer(sparse=False)
         self.norm = norm
+        self.normalData = {}
 
     '''
     Retorna los datos de las muestras pasadas por parametro en un diccionario
@@ -156,7 +157,7 @@ class Normalizer(object):
         X_train_2 = np.append(X_train, y_train[:, :1], axis=1)
         X_test_2 = np.append(X_test, y_test[:, :1], axis=1)
 
-        return ({
+        self.normalData = {
             "trainingFeatures": X_train,
             "testingFeatures": X_test,
             "trainingFeaturesFirstInclude": X_train_2,
@@ -165,4 +166,18 @@ class Normalizer(object):
             "trainingClassesSecond": y_train_second_round,
             "testingClassesFirst": y_test_first_round,
             "testingClassesSecond": y_test_second_round
-        })
+        }
+
+        return {
+            "trainingFeatures": X_train,
+            "testingFeatures": X_test,
+            "trainingFeaturesFirstInclude": X_train_2,
+            "testingFeaturesFirstInclude": X_test_2,
+            "trainingClassesFirst": y_train_first_round,
+            "trainingClassesSecond": y_train_second_round,
+            "testingClassesFirst": y_test_first_round,
+            "testingClassesSecond": y_test_second_round
+        }
+
+    def get_normal_data(self):
+        return self.normalData

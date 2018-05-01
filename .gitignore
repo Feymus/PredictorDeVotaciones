@@ -2,6 +2,7 @@
 muestras.csv
 muestras1.csv
 muestras2.csv
+data.csv
 
 # Modulos de python compilados.
 *.pyc

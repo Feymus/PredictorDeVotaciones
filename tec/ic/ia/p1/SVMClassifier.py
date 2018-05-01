@@ -7,9 +7,9 @@ class SVMClassifier(object):
 
     '''Un clasificador de modelos en SVM.'''
 
-    def __init__(self, pKernel, pC):
+    def __init__(self, pKernel, pC, pGamma):
         super(SVMClassifier, self).__init__()
-        self.classifier = svm.SVC(kernel=pKernel, C=pC)
+        self.classifier = svm.SVC(kernel=pKernel, C=pC, gamma=pGamma)
         self.trainingTime = 0
 
     '''
