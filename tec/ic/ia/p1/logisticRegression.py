@@ -114,13 +114,20 @@ Funcion de Regresion logistica
 """
 def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_percent, l_regulizer):
  
-    learning_rate = 0.05
+    learning_rate = 0.5
     print("Learning rate: ",learning_rate)
     print("Scale: ", scale,"\n")
     print("Epochs: ", epochs)
     display_step = 1
 
     oneHot = OneHotEncoder()
+
+    oneHot.fit(train_x)
+    train_x = oneHot.transform(train_x).toarray()
+
+    oneHot.fit(test_x)
+    test_x = oneHot.transform(test_x).toarray()
+
     train_y = replace_political_party(train_y).reshape(-1,1)
     oneHot.fit(train_y)
     train_y = oneHot.transform(train_y).toarray()
@@ -138,8 +145,8 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
     #print("Shape of y_test", test_y.shape)
     #print(" ")
 
-    shape_x = train_x.shape[1]
-    shape_y = train_y.shape[1]
+    shape_x = test_x.shape[1]
+    shape_y = test_y.shape[1]
     
     with tf.name_scope("Declaring_placeholder"):
         X = tf.placeholder(tf.float32, shape = [None, shape_x])
@@ -189,8 +196,8 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
                 _, c = sess.run([optimizer, cost], feed_dict={X: train_x, y: train_y})
                 cost_in_each_epoch += c
 ##                # you can uncomment next two lines of code for printing cost when training
-##                if (epoch+1) % display_step == 0:
-##                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
+                if (epoch+1) % display_step == 0:
+                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
             
             print("Optimization Finished!")
 
@@ -198,13 +205,18 @@ def logic_regression(train_x , train_y, test_x, test_y, scale, epochs, test_perc
             correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(y, 1))
             # calcula el accuracy
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-            print("Accuracy:", accuracy.eval({X: test_x, y: test_y})*100)
+            print("Accuracy Training:", accuracy.eval({X: train_x, y: train_y})*100)
+            print("Accuracy Testing:", accuracy.eval({X: test_x, y: test_y})*100)
+            
         
 
-logistic_regression_r1(50000, 0.0001, 300, 20, 2)
-logistic_regression_r2(50000, 0.0001, 300, 20, 1)
-logistic_regression_r2(50000, 0.0001, 300, 20, 2)
-logistic_regression_r2_r1(50000, 0.0001, 300, 20, 2)
+
+logistic_regression_r1(50000, 0.00001, 800, 20, 2)
+#logistic_regression_r2(50000, 0.0001, 1000, 20, 1)
+#logistic_regression_r2(50000, 0.0001, 300, 20, 2)
+#logistic_regression_r2_r1(50000, 0.0001, 300, 20, 2)
+
+
 
 
 
