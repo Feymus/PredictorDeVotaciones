@@ -136,7 +136,7 @@ def show_accuracy(model, predictions):
     print("----------------------------------------------")
 
 
-def svm_classification(lenData, pctTest, C, gamma, kernel):
+def svm_classification(lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     samples = generar_muestra_pais(lenData)
     quantity_for_testing = int(lenData*pctTest)
 
@@ -179,7 +179,7 @@ def svm_classification(lenData, pctTest, C, gamma, kernel):
 
 
 def main():
-    svm_classification(50000, 0.2, 1, 1, "rbf")
+    svm_classification(50000, 0.2, C=10, gamma=0.0083333, kernel="rbf")
 
 
 if __name__ == '__main__':
