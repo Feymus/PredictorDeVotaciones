@@ -8,21 +8,11 @@ from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
     generar_muestra_provincia
 )
-from math import log2
+from math import log2, sqrt
 import random
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-
-positive=0
-negative=0
-
-
-temp_positive=0
-
-temp_negative=0
-
-
 
 
 class Tree(object):
@@ -33,12 +23,9 @@ class Tree(object):
         self.children = []
         self.gain=0
         self.votes= None
-        self.p=0
-        self.n=0
-        self.set_size=0
-        self.set_error=0
-        self.pk=0
-        self.nk=0
+        self.votes_test= None
+        self.votes_test_result= None
+      
 
         if children is not None:
             for child in children:
@@ -107,99 +94,61 @@ class Tree(object):
 
 
     def calc_pk_nk(self):
-    	#print("WUUU")
     	if(self.children!=[]):
-    	
-    		
+   		
     		for i in self.children:
-    			#print("Estoy en el for")
-    			#print(self.p + self.n)
-    			#print(i.p+i.n)
-    			#print(i)
+
     			if(self.p + self.n>0):
 	    			i.pk = self.p*((i.p+i.n)/(self.p+self.n))
 	    			i.nk = self.n*((i.p+i.n)/(self.p+self.n))
-	    			#print("pk:"+str(i.pk))
-	    			#print("nk:"+str(i.nk))
+
 	    			i.calc_pk_nk()
 
-
+    def total_votes(self):
+    	tot=0
+    	for i in self.votes.keys():
+    		tot+=self.votes.get(i)
+    	return tot 
 
 
     def test(self, test_list, attributes, expected):
-    	global positive
-    	global negative
-    	global temp_positive
-    	global temp_negative
+    	dic={}
+    	
+  
     	if(self.name in attributes):
     		
-    		
+
     		position_attr=attributes.index(self.name)
     		attr=test_list[position_attr]
     		child=self.get_child(attr)
-    		
+    		valor=['NULO']
     		if(child!=None):
+
+    			
     			
 	    		for i in child.children:
-	    			
-	    			
-	    			if(i.children==[]):
-	    				if(expected in i.name):
-
-	    					temp_positive+=1
-	    					positive+=1	
-	    				else:
-	    					temp_negative+=1
-	    					negative+=1	
-	    				#print("AQUI TOY3")
-	    				#print("tpositive"+str(temp_positive))
-	    				#print("tnegative"+str(temp_negative))
-	    				#i.set_data_pruning(1,0)
-	    				#child.set_data_pruning(1,0)
-	    				#self.set_data_pruning(1,0)
-	    				#print(self)
-	    				return (expected in i.name)
-	    			else:
-	    				
-	    				is_correct=i.test(test_list, attributes, expected)
-	    				
-	    				if(is_correct):
-	    					i.set_data_pruning(1,0)
-	    					child.set_data_pruning(1,0)
-	    					self.set_data_pruning(1,0)
-	    					
-	    					return is_correct
-	    				
+	    		
+	    			valor=i.test(test_list,attributes,expected)
 	    	
-	    		#print("AQUI TOY4")
-	    		#print("tpositive"+str(temp_positive))
-	    		#print("tnegative"+str(temp_negative))		
-	    		child.set_data_pruning(0,1)
-	    		self.set_data_pruning(0,1)
-	    		#print(child)
-	    		return is_correct
+	    			if(i.children==[]):
+	    			
+	    				self.add_votes_test_result(i.name)
+	    				i.add_votes_test_result(i.name)
+	    				child.add_votes_test_result(i.name)
+	    				return i.name
+
+	    		child.add_votes_test_result(valor)
+	    		self.add_votes_test_result(valor)
+	    		return valor
 	    	else:
-	    		#print("AQUI TOY1")
-	    		#print("tpositive"+str(temp_positive))
-	    		#print("tnegative"+str(temp_negative))
-	    		
-	    		
-	    		temp_negative+=1
-	    		negative+=1
-	    		self.set_data_pruning(0,1)	
-	    		#print(self)		
-	    		return False
+	    		self.add_votes_test_result(['NULO'])
+	    		return ['NULO']
     	else:
-    		#print("AQUI TOY2")
-    		#print("tpositive"+str(temp_positive))
-	    	#print("tnegative"+str(temp_negative))
     		
-    		
-    		temp_negative+=1
-	    	negative+=1		
-	    	self.set_data_pruning(copy.copy(temp_positive),(copy.copy(temp_negative)))
-	    	#print(self)
-    		return False
+
+    		name=self.name
+    		self.add_votes_test_result(name)
+    		return self.name
 
     		
 
@@ -207,63 +156,145 @@ class Tree(object):
     	
 
 
-    '''		
-    def pruning(self, threshold, max_gain):
-    	#print("INICIO:"+str(self.name))
-    	if(len(str(self.name))>4 and str(self.name)[:4]=="attr"):
-    		#print("NAME: "+str(self.name))
-    		#print("GAIN: "+str(self.gain))
-    		for i in self.children:
-    			i.pruning(threshold,max_gain)
-    			
-    	else:
-    		
-    		for i in self.children:
-    		
-    			
-    			if(isinstance(i.name, str)):
-    				#print("---------------------------------------------------------------------------------------")
-    			
-    				i.pruning(threshold,max_gain)
-    				if(i.gain<threshold):
-    					
+    def add_votes_test_result(self,name):
+    	
+    	if(isinstance(name,list)):
+    		name=name[0]
+    	
+    		if(isinstance(name,list)):
+    			name=name[0]
 
-    					
-    					if(i.get_leafs!=None):
-	    					
-	    					self.delete_child(i)
-	    					
-	    					self.add_child(i.get_leafs())
-	    					
+    
+
+    	if(self.votes_test_result!=None):
+    		count_values=self.votes_test_result.get(name)
+    		if(count_values!=None):
+    			self.votes_test_result[name]=count_values+1
+    		else:
+    			self.votes_test_result[name]=1
+    	else:
+    		self.votes_test_result={}
+    		#print(name)
+    		self.votes_test_result[name]=1
+
+
+    def observed_table(self,results):
+    	table=[]
+    	for i in self.children:
+    		row=[]
+    		for j in results:
+    
+    			if(i.votes_test_result!=None):
+	    			if(i.votes_test_result.get(j)!=None):
+	    				row+=[i.votes_test_result.get(j)]
+	    			else:
+	    				row+=[0]
+    		table+=[row]
+    		row=[]
+    	return table 
+    def expected_table(self, table):
+    	table_expected=[]
+    	total_table=self.total_table(table)
+    	#print(total_table)
+    	for i in table:
+    		temp=[]
+    		for j in range(len(i)):
+    			column_total=self.total_column_observed_table(table, j)
+    			row_total=sum(i)
+    			if(total_table>0):
+    				temp+=[column_total*row_total/total_table]
     			else:
-    				#print("---------------------------------------------------------------------------------------")
-    			
-    				i.pruning(threshold,max_gain)
-    '''
-    def chi_square(self):
-    	#print("INICIO:"+str(self.name))
-    	if(len(str(self.name))>4 and str(self.name)[:4]=="attr"):
-    		chi=0
-    		for i in self.children:
-    			if(i.pk!=0 and i.nk!=0):
-    				chi+=(i.p-i.pk)**2/i.pk+(i.n-i.nk)**2/i.nk
-    		return chi
-    def pruning_chi(self, threshold, attr):
+    				temp+=[0]
+
+    		table_expected+=[temp]
+    	return table_expected
+
+    def chi_square(self, expected_table,observed_table):
+    	chi_sum=0
+    	for i in range(len(observed_table)):
+
+    		for j in range(len(observed_table[i])):
+    			if(expected_table[i][j]!=0):
+    				chi=(observed_table[i][j]-expected_table[i][j])**2/expected_table[i][j]
+    				chi_sum+=chi
+
+    	return chi_sum
+
+
+
+
+
+
+    def total_table(self,table):
+    	total=0
+    	for i in table:
+    		total+=sum(i)
+    	return total
+
+
+    def total_column_observed_table(self, table, column):
+    	sum_column=0
+
+    	for i in table:
+
+    		if(i!=[]):
+    			sum_column+= i[column]
+
+    	return sum_column
+
+
+    #def chi_square(self):
+
+    def desviation(self,data,votes):
+    	desv=0
+
+    	for i in self.children:
+    		for j in data:
+    			n_k=0
+    			if(i.votes_test_result!=None):
+    				if(i.votes_test_result.get(j)!=None and self.votes_test_result.get(j)!=None):
+    					total=sum_votes(votes)    					
+    					p=votes.get(j)
+    					n=total-p
+    					pk=i.votes_test_result.get(j)
+    					nk=self.votes_test_result.get(j)-i.votes_test_result.get(j)
+    					n_k=p*(pk+nk)/p+n
+    					desv+=n_k
+    					
+    		return  sqrt(desv)
+
+    def pruning_chi(self, threshold, attr, data,votes):
 
 
     	if(self.children!=[]):
-    		for i in self.children:
-    			i.pruning_chi(threshold,attr)
-    			chi=self.chi_square()
-	    		p=1-threshold
-	    		crit = stats.chi2.ppf(p,len(attr)+1) 
-	    		
-	    		if(chi!=None):
-	    			if(chi>crit):
-	    				self.delete_child(i)
-	    				self.add_child(i.get_leafs())
+    		if(votes == None):
+    			for i in self.children:
+    				i.pruning_chi(threshold, attr,data,self.votes_test_result)
+    		else:
+    			for i in self.children:
+    				t_obs=i.observed_table(data)
+    				t_expc=i.expected_table(t_obs)
+    			
+    				if(t_obs!=[[]] and 0<len(t_expc)):
+    					i.pruning_chi(threshold,attr, data, self.votes_test_result)
+    					chi=self.chi_square(t_expc,t_obs)
+    					
+    					desv=self.desviation(data, votes)
 
-	    
+    					if(desv!=None):
+    					
+    							
+    						if(chi>desv):
+
+    							#print("---------------------------------------------------------------------")
+    							#print("poda")
+    							#print(chi)
+    							#print(desv)
+    							#print("---------------------------------------------------------------------")
+    							self.delete_child(i)
+    							self.add_child(i.get_leafs())
+
+	
     	
     	
     
@@ -288,7 +319,11 @@ class Tree(object):
     	
 
 
-
+def sum_votes(votes):
+	val=0
+	for i in votes.keys():
+		val+=votes.get(i)
+	return val
 
   
 
@@ -300,13 +335,13 @@ def decision_tree_learning(examples, attributes, parent_examples):
 	
 	if not examples:
 		
-		return delete_duplicates(plurality_values(parent_examples))
+		return  plurality_values(parent_examples)
 	elif same_classification(examples):
 		
-		return delete_duplicates(classifications(examples))
+		return classifications(examples)
 	elif not attributes:
 		
-		return delete_duplicates(plurality_values(examples))
+		return  plurality_values(examples)
 	else:
 
 		importance_value , max_gain=importance(examples)
@@ -515,7 +550,8 @@ def classifications(examples):
 		size=len(i)
 		list_values+=[i[size-1]]
 		
-	return list_values
+	#print(delete_duplicates(list_values))
+	return  delete_duplicates(list_values)
 
 def delete_duplicates(values):
 	set_values = set(values)
@@ -540,6 +576,7 @@ def plurality_values(examples):
 		if(temp==value_max):
 			ties.append(classif_max)
 	if(ties==[]):
+
 		return classif_max
 	else:
 		return random.choice(ties)
@@ -550,11 +587,16 @@ def plurality_values(examples):
 values = [["Full","no"],["Full","no"],["Some","yes"],["Full","yes"],["Full","no"],["Some","yes"],["None","no"], ["Some","yes"],["Some","yes"],["Full","no"],["None","no"],["Full","yes"]]
 values2 = [["French","yes"],["French","no"],["Italian","yes"],["Italian","no"],["Thai","yes"],["Thai","yes"],["Thai","no"],["Thai","no"],["Burger","yes"],["Burger","yes"],["Burger","no"],["Burger","no"]]
 values3=[["Full","Thai","no"],["Full","French","no"],["Some","French","yes"],["Full","Thai","yes"],["Full","Italian","no"],["Some","Burger","yes"],["None","Burger","no"], ["Some","Italian","yes"],["Some","Thai","yes"],["Full","Burger","no"],["None","Thai","no"],["Full","Burger","yes"]]
-lenData = 5000
+lenData = 6000
 samples = generar_muestra_pais(lenData)
+data=[]
+for i in samples:
+	data+=[i[len(i)-1]]
+data=list(set(data))
 
 
-lenData1 = 250
+
+lenData1 = 2500
 samples_pruning = generar_muestra_pais(lenData1)
 
 attr=[]
@@ -578,13 +620,8 @@ for i in samples_pruning:
 	
 	result=tree_test.test(i,attr,i[len(i)-1])
 
-	#print("positive"+str(positive))
-	#print("negative"+str(negative))
-	#print("tpositive"+str(temp_positive))
-	#print("tnegative"+str(temp_negative))
-	temp_positive=0
-	temp_negative=0
-	if(result):
+
+	if(result[0]==i[len(i)-1]):
 		win+=1
 		
 	else:
@@ -599,17 +636,33 @@ print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
 print(tree_test)
-tree_test.calc_pk_nk()
-tree_test.pruning_chi(0.3,attr)
+print(tree_test.observed_table(data))
+print(tree_test.expected_table(tree_test.observed_table(data)))
+print(tree_test.children[0])
 
+print(tree_test.children[0].children[0].children[0])
+print(tree_test.children[0].children[0].children[0].observed_table(data))
+print(tree_test.children[0].children[0].children[0].expected_table(tree_test.observed_table(data)))
+
+
+#tree_test.calc_pk_nk()
+#print(tree_test.observed_table(data))
+#print(tree_test.expected_table(tree_test.observed_table(data)))
+print(tree_test.chi_square(tree_test.expected_table(tree_test.observed_table(data)),tree_test.observed_table(data)))
+print(tree_test.children[0].desviation(data,tree_test.votes_test_result))
+
+tree_test.pruning_chi(0.5,attr,data,None)
 
 fail=0
 win=0
 for i in samples_pruning:
 
 	result=tree_test.test(i,attr,i[len(i)-1])
-	if(result):
+
+
+	if(result[0]==i[len(i)-1]):
 		win+=1
+		
 	else:
 		fail+=1
 print("---------------------------------------------------------------------")
@@ -619,3 +672,4 @@ print("ACERTADOS:"+str(win))
 print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
+
