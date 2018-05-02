@@ -103,13 +103,6 @@ class LogisticRegressionClassifier(object):
         display_step = 1
 
         oneHot = OneHotEncoder()
-
-        oneHot.fit(train_x)
-        train_x = oneHot.transform(train_x).toarray()
-
-        oneHot.fit(test_x)
-        test_x = oneHot.transform(test_x).toarray()
-
         train_y = self.replace_political_party(train_y).reshape(-1,1)
         oneHot.fit(train_y)
         train_y = oneHot.transform(train_y).toarray()
@@ -128,7 +121,7 @@ class LogisticRegressionClassifier(object):
 ##        print(" ")
 
         shape_x = train_x.shape[1]
-        shape_y = test_y.shape[1]
+        shape_y = train_y.shape[1]
         
         with tf.name_scope("Declaring_placeholder"):
             X = tf.placeholder(tf.float32, shape = [None, shape_x])
