@@ -46,18 +46,84 @@ Gamma: Define cuánta influencia tiene un único ejemplo de entrenamiento. Cuant
 
 **Análisis de resultados**
 
-Para el análisis del modelo se pretende utilizar muestras de tamaños 10, 100, 1000 y 10000, para todas se guardará un dos por ciento de las muestras para realizar la prueba final. Además, en SVM se probarán los kernel "rbf" y "sigmoid", para los valores de C se probarán valores enteros en el rango de 1-10, y para gamma se probarán valores exponenciales de 1 a 0.000000001.
+Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000 y 10000, para todas se guardará un dos por ciento de las muestras para realizar la prueba final. Además, en SVM se probarán los kernel "rbf" y "sigmoid", para los valores de C se probarán valores 1 y 10, para gamma se probarán valores exponenciales de 1 a 0.000000001 y el valor auto (que se calcula segun la cantidad de propiedades).
 
-Cada prueba muestra el error de entrenamiento (ER) promedio del modelo luego de 20 corridas.
+Cada prueba muestra el error de entrenamiento (ER) promedio del modelo luego de 30 corridas.
 
-Pruebas:
+Pruebas (rbf):
 
-1) Kernel: rbf, C: 1, Gamma: 1, tamaño: 10
+1) Kernel: rbf, C: 1, Gamma: 1
 
-|               |   ER    |
-|---------------|---------|
-| Primera ronda |  0.325  |
-| Segunda ronda |  0.575  |
-| Segunda ronda (basado en primera) |  0.6  |
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    |           |
+| Segunda ronda     |  0.444  |   0.41    |           |
+| Basado en primera |  0.445  |   0.39    |           |
+
+2) Kernel: rbf, C: 1, Gamma: 0.000000001
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.792   |  0.766    |           |
+| Segunda ronda     | 0.442   |  0.4      |           |
+| Basado en primera | 0.442   |  0.4      |           |
+
+2) Kernel: rbf, C: 1, Gamma: auto
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.762   |  0.74     |           |
+| Segunda ronda     | 0.432   |  0.3975   |           |
+| Basado en primera | 0.43    |  0.3975   |           |
+
+1) Kernel: rbf, C: 10, Gamma: 1
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.792   | 0.743     |           |
+| Segunda ronda     | 0.385   | 0.413     |           |
+| Basado en primera | 0.385   | 0.408     |           |
+
+2) Kernel: rbf, C: 10, Gamma: 0.000000001
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.81    |           |           |
+| Segunda ronda     | 0.415   |           |           |
+| Basado en primera | 0.415   |           |           |
+
+2) Kernel: rbf, C: 10, Gamma: auto
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.78    |           |           |
+| Segunda ronda     | 0.447   |           |           |
+| Basado en primera | 0.457   |           |           |
+
+Pruebas (sigmoid):
+
+1) Kernel: sigmoid, C: 1, Gamma: 1
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.735   |           |           |
+| Segunda ronda     | 0.417   |           |           |
+| Basado en primera | 0.417   |           |           |
+
+2) Kernel: sigmoid, C: 1, Gamma: 0.000000001
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.783   |           |           |
+| Segunda ronda     | 0.433   |           |           |
+| Basado en primera | 0.433   |           |           |
+
+3) Kernel: sigmoid, C: 1, Gamma: auto
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |    |           |           |
+| Segunda ronda     |    |           |           |
+| Basado en primera |    |           |           |
 
 ## Manual de usuario
