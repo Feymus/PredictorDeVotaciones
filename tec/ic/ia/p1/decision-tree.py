@@ -13,8 +13,9 @@ import random
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-
-
+import sys
+import operator
+sys.setrecursionlimit(9999999)
 class Tree(object):
     "Generic tree node."
     def __init__(self, name='root', children=None):
@@ -23,7 +24,7 @@ class Tree(object):
         self.children = []
         self.gain=0
         self.votes= None
-        self.votes_test= None
+      
         self.votes_test_result= None
       
 
@@ -245,7 +246,7 @@ class Tree(object):
 
     #def chi_square(self):
 
-    def desviation(self,data,votes):
+    def desviation(self,data):
     	desv=0
 
     	for i in self.children:
@@ -253,71 +254,62 @@ class Tree(object):
     			n_k=0
     			if(i.votes_test_result!=None):
     				if(i.votes_test_result.get(j)!=None and self.votes_test_result.get(j)!=None):
-    					total=sum_votes(votes)    					
-    					p=votes.get(j)
-    					n=total-p
-    					pk=i.votes_test_result.get(j)
-    					nk=self.votes_test_result.get(j)-i.votes_test_result.get(j)
-    					n_k=p*(pk+nk)/p+n
-    					desv+=n_k
     					
-    		return  sqrt(desv)
+    					
+    					p=self.votes_test_result.get(j)
+    					n= sum_votes(self.votes_test_result)-p
+    					
+    					pk=i.votes_test_result.get(j)
+    					nk=sum_votes(i.votes_test_result)-pk
 
-    def pruning_chi(self, threshold, attr, data,votes):
+    					pl=(pk+nk)/(p+n)
+    					n_k=p*pl
+    					desv+=(n_k-pk)**2/n_k
+    					
+    					
+    	print(desv)	
+    	return  desv
+
+    def pruning_chi(self, threshold, attr, data):
 
 
     	if(self.children!=[]):
-    		if(votes == None):
-    			for i in self.children:
-    				i.pruning_chi(threshold, attr,data,self.votes_test_result)
-    		else:
-    			for i in self.children:
-    				t_obs=i.observed_table(data)
-    				t_expc=i.expected_table(t_obs)
+    		for i in self.children:
+    			t_obs=i.observed_table(data)
+    			t_expc=i.expected_table(t_obs)
+    			if(t_obs!=[[]] and 0<len(t_expc)):
+    				i.pruning_chi(threshold,attr, data)
+    				
+    				chip=self.desviation(data)
+    				chih=i.desviation(data)
+    				if(chip<threshold and chih<threshold):
+    					self.children=[]
+    					#self.delete_child(i)
+    					self.add_child(i.get_leafs())
+
+    def pruning_chi2(self, threshold, attr, data):
+    	if (self.children==[]):
+    		print(self.desviation(data))
+    		return self.desviation(data)
+    	else:
+    		for i in self.children:
+    			n=i.pruning_chi2(threshold,attr,data)
+    			p=self.desviation(data)
+    			print("n"+str(n))
+    			print("p"+str(p))
+    			if(n<threshold and p<threshold):
+    				dic=self.votes
+    				max_value=max(dic.values());
+    				for key in dic.keys():
+    					if(dic[key] == max_value):
+    						max_key = key
+    						break;
+    				self.children=[Tree(max_key,[])]
+    				break;
+
+    		return p
     			
-    				if(t_obs!=[[]] and 0<len(t_expc)):
-    					i.pruning_chi(threshold,attr, data, self.votes_test_result)
-    					chi=self.chi_square(t_expc,t_obs)
-    					
-    					desv=self.desviation(data, votes)
-
-    					if(desv!=None):
-    					
-    							
-    						if(chi>desv):
-
-    							#print("---------------------------------------------------------------------")
-    							#print("poda")
-    							#print(chi)
-    							#print(desv)
-    							#print("---------------------------------------------------------------------")
-    							self.delete_child(i)
-    							self.add_child(i.get_leafs())
-
-	
     	
-    	
-    
-
-
-
-    		
-
-
-
-
-
-
-
-
-
-
-    		
-    		
-
-
-    	
-
 
 def sum_votes(votes):
 	val=0
@@ -596,7 +588,7 @@ data=list(set(data))
 
 
 
-lenData1 = 2500
+lenData1 = 3000
 samples_pruning = generar_muestra_pais(lenData1)
 
 attr=[]
@@ -635,7 +627,13 @@ print("ACERTADOS:"+str(win))
 print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
+
 print(tree_test)
+#print(tree_test.get_leafs())
+#print(tree_test.desviation(data))
+#print(tree_test.chi_square(tree_test.expected_table(tree_test.observed_table(data)),tree_test.observed_table(data)))
+tree_test.pruning_chi2(0.05,attr,data)
+'''
 print(tree_test.observed_table(data))
 print(tree_test.expected_table(tree_test.observed_table(data)))
 print(tree_test.children[0])
@@ -652,6 +650,7 @@ print(tree_test.chi_square(tree_test.expected_table(tree_test.observed_table(dat
 print(tree_test.children[0].desviation(data,tree_test.votes_test_result))
 
 tree_test.pruning_chi(0.5,attr,data,None)
+'''
 
 fail=0
 win=0
