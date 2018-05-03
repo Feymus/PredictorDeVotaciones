@@ -88,17 +88,17 @@ Pruebas (rbf):
 
 |                   |   100   |   1000    |   10000   |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.81    |           |           |
-| Segunda ronda     | 0.415   |           |           |
-| Basado en primera | 0.415   |           |           |
+| Primera ronda     | 0.81    | 0.76      |           |
+| Segunda ronda     | 0.415   | 0.41      |           |
+| Basado en primera | 0.415   | 0.41      |           |
 
 2) Kernel: rbf, C: 10, Gamma: auto
 
 |                   |   100   |   1000    |   10000   |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.78    |           |           |
-| Segunda ronda     | 0.447   |           |           |
-| Basado en primera | 0.457   |           |           |
+| Primera ronda     | 0.78    | 0.76      |           |
+| Segunda ronda     | 0.447   | 0.41      |           |
+| Basado en primera | 0.457   | 0.407     |           |
 
 Pruebas (sigmoid):
 
@@ -106,24 +106,48 @@ Pruebas (sigmoid):
 
 |                   |   100   |   1000    |   10000   |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.735   |           |           |
-| Segunda ronda     | 0.417   |           |           |
-| Basado en primera | 0.417   |           |           |
+| Primera ronda     | 0.735   | 0.7455    |           |
+| Segunda ronda     | 0.417   | 0.41      |           |
+| Basado en primera | 0.417   | 0.41      |           |
 
 2) Kernel: sigmoid, C: 1, Gamma: 0.000000001
 
 |                   |   100   |   1000    |   10000   |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.783   |           |           |
-| Segunda ronda     | 0.433   |           |           |
-| Basado en primera | 0.433   |           |           |
+| Primera ronda     | 0.783   | 0.806     |           |
+| Segunda ronda     | 0.433   | 0.489     |           |
+| Basado en primera | 0.433   | 0.489     |           |
 
 3) Kernel: sigmoid, C: 1, Gamma: auto
 
 |                   |   100   |   1000    |   10000   |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     |    |           |           |
-| Segunda ronda     |    |           |           |
-| Basado en primera |    |           |           |
+| Primera ronda     | 0.785   | 0.75      |           |
+| Segunda ronda     | 0.397   | 0.387     |           |
+| Basado en primera | 0.397   | 0.387     |           |
+
+4) Kernel: sigmoid, C: 10, Gamma: 1
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.775   | 0.757     |           |
+| Segunda ronda     | 0.398   | 0.409     |           |
+| Basado en primera | 0.398   | 0.409     |           |
+
+5) Kernel: sigmoid, C: 10, Gamma: 0.000000001
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.82    | 0.8       |           |
+| Segunda ronda     | 0.51    | 0.47      |           |
+| Basado en primera | 0.51    | 0.47      |           |
+
+6) Kernel: sigmoid, C: 10, Gamma: auto
+
+|                   |   100   |   1000    |   10000   |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     | 0.772   | 0.75      |           |
+| Segunda ronda     | 0.428   | 0.408     |           |
+| Basado en primera | 0.428   | 0.408     |           |
 
 ## Manual de usuario
