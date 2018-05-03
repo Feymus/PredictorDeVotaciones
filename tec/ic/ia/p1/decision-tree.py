@@ -32,6 +32,7 @@ class DecisionTree():
 			attr+=["attr"+str(i)]
 		self.attr=attr
 		self.tree= desition_tree(samples, attr, data)
+		self.tree.pruning_chi(0.2 , attr, data)
 
 	def classify(self,test):
 		return self.tree.test(test,self.attr,test[len(test)-1])
@@ -166,53 +167,6 @@ class Tree(object):
     		self.votes_test_result[name]=1
 
 
-    def observed_table(self,results):
-    	table=[]
-    	for i in self.children:
-    		row=[]
-    		for j in results:
-    
-    			if(i.votes_test_result!=None):
-	    			if(i.votes_test_result.get(j)!=None):
-	    				row+=[i.votes_test_result.get(j)]
-	    			else:
-	    				row+=[0]
-    		table+=[row]
-    		row=[]
-    	return table 
-
-    def expected_table(self, table):
-    	table_expected=[]
-    	total_table=self.total_table(table)
-    	#print(total_table)
-    	for i in table:
-    		temp=[]
-    		for j in range(len(i)):
-    			column_total=self.total_column_observed_table(table, j)
-    			row_total=sum(i)
-    			if(total_table>0):
-    				temp+=[column_total*row_total/total_table]
-    			else:
-    				temp+=[0]
-
-    		table_expected+=[temp]
-    	return table_expected
-
-    def chi_square(self, expected_table,observed_table):
-    	chi_sum=0
-    	for i in range(len(observed_table)):
-
-    		for j in range(len(observed_table[i])):
-    			if(expected_table[i][j]!=0):
-    				chi=(observed_table[i][j]-expected_table[i][j])**2/expected_table[i][j]
-    				chi_sum+=chi
-
-    	return chi_sum
-
-
-
-
-
 
     def total_table(self,table):
     	total=0
@@ -230,9 +184,9 @@ class Tree(object):
     	return sum_column
 
 
-    #def chi_square(self):
 
-    def desviation(self,data):
+
+    def chi_square(self,data):
     	desv=0
     	for i in self.children:
     		for j in data:
@@ -246,33 +200,17 @@ class Tree(object):
     					pl=(pk+nk)/(p+n)
     					n_k=p*pl
     					desv+=(n_k-pk)**2/n_k				
-    	#print(desv)	
+	
     	return  desv
 
-    def pruning_chi(self, threshold, attr, data):
-    	if(self.children!=[]):
-    		for i in self.children:
-    			t_obs=i.observed_table(data)
-    			t_expc=i.expected_table(t_obs)
-    			if(t_obs!=[[]] and 0<len(t_expc)):
-    				i.pruning_chi(threshold,attr, data)
-    				chip=self.desviation(data)
-    				chih=i.desviation(data)
-    				if(chip<threshold and chih<threshold):
-    					self.children=[]
-    					#self.delete_child(i)
-    					self.add_child(i.get_leafs())
 
-    def pruning_chi2(self, threshold, attr, data):
+    def pruning_chi(self, threshold, attr, data):
     	if (self.children==[]):
-    		#print(self.desviation(data))
-    		return self.desviation(data)
+    		return self.chi_square(data)
     	else:
     		for i in self.children:
-    			n=i.pruning_chi2(threshold,attr,data)
-    			p=self.desviation(data)
-    			#print("n"+str(n))
-    			#print("p"+str(p))
+    			n=i.pruning_chi(threshold,attr,data)
+    			p=self.chi_square(data)
     			if(n<threshold and p<threshold):
     				dic=self.votes
     				max_value=max(dic.values());
@@ -280,7 +218,6 @@ class Tree(object):
     					if(dic[key] == max_value):
     						max_key = key
     						break;
-    				#print(max_key)
     				self.children=[Tree([max_key],[])]
     				break;
     		return p
@@ -337,13 +274,6 @@ def decision_tree_learning(examples, attributes, parent_examples):
 					temp_tree=Tree(v,[Tree(subtree,[])])
 				temp_tree.votes=count_votes(exs)
 				tree.add_child(temp_tree)
-				
-				
-
-
-				
-
-		
 		return tree
 def count_votes(examples):
 	temp_list=[]
@@ -554,7 +484,7 @@ def desition_tree(samples, attr, data):
 	
 
 	tree_test=decision_tree_learning(samples, attr,[])
-
+	'''
 	fail=0
 	win=0
 	for i in samples_pruning:
@@ -572,6 +502,7 @@ def desition_tree(samples, attr, data):
 	print("FALLADOS: "+str(fail))
 	print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 	print("---------------------------------------------------------------------")
+	'''
 	return (tree_test)
 
 '''
@@ -580,19 +511,18 @@ values = [["Full","no"],["Full","no"],["Some","yes"],["Full","yes"],["Full","no"
 values2 = [["French","yes"],["French","no"],["Italian","yes"],["Italian","no"],["Thai","yes"],["Thai","yes"],["Thai","no"],["Thai","no"],["Burger","yes"],["Burger","yes"],["Burger","no"],["Burger","no"]]
 values3=[["Full","Thai","no"],["Full","French","no"],["Some","French","yes"],["Full","Thai","yes"],["Full","Italian","no"],["Some","Burger","yes"],["None","Burger","no"], ["Some","Italian","yes"],["Some","Thai","yes"],["Full","Burger","no"],["None","Thai","no"],["Full","Burger","yes"]]
 '''
-lenData = 6000
-samples = generar_muestra_pais(lenData)
+
 '''
 data=[]
 for i in samples:
 	data+=[i[len(i)-1]]
 data=list(set(data))
-'''
+
 
 
 lenData1 = 1000
 samples_pruning = generar_muestra_pais(lenData1)
-'''
+
 attr=[]
 for i in range(len(samples[0])-1):
 	attr+=["attr"+str(i)]
@@ -601,7 +531,7 @@ tree_test=desition_tree(samples, attr, data)
 print("ARBOL NO PODADO")
 #tree_test.printTree()
 print(tree_test)
-tree_test.pruning_chi2(0.2 , attr, data)
+tree_test.pruning_chi(0.2 , attr, data)
 
 
 fail=0
@@ -622,4 +552,11 @@ print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
 '''
+nomalizer=Normalizer()
+lenData = 6000
+samples = generar_muestra_pais(lenData)
+samples_normalizer=nomalizer.separate_data_2(samples, 0.2)
+decisionTree=DecisionTree()
+decisionTree.train(samples_normalizer["trainingFeaturesFirst"].tolist())
+print(decisionTree.tree)
 

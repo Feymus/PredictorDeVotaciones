@@ -10,6 +10,33 @@ from tec.ic.ia.pc1.g06 import (
 )
 from math import log2,sqrt
 import random
+class Kd_Tree():
+    def __init__(self):
+        self.tree = None 
+        self.samples = None
+
+    def train(self, samples):
+        self.samples=samples
+        self.tree=kd_trees(list(samples),0)
+
+    def classify(self, test):
+        mini_test=kdtree_closest_point(self.tree,test,0,[]).tolist()
+        neightboards=[]
+        for j in top_points(test,15):
+            pos=self.samples.tolist().index(j)
+            o=r1_results.tolist()[pos]
+            neightboards+=[o]
+      
+        return best_vote_percent(neightboards)
+   
+
+
+
+
+       
+
+
+
 
 class BinaryTree():
 
@@ -222,25 +249,30 @@ r1=samples_normalizar.get('trainingFeatures')
 r1_tests=samples_normalizar.get('testingFeatures')
 r1_results=samples_normalizar.get('trainingClassesFirst')
 r1_tests_results=samples_normalizar.get('testingClassesFirst')
-
+tree=Kd_Tree()
+tree.train(r1_tests)
+print(tree.classify(r1_tests[0]))
+'''
 
 r1_tree=kd_trees(list(r1),0)
 fail=0
 win=0
 for i in r1_tests.tolist():
-
+    print(i)
     mini_test=kdtree_closest_point(r1_tree,i,0,[]).tolist()
 
 
     pos_test=r1_tests.tolist().index(i)
     e=r1_tests_results.tolist()[pos_test]
     neightboards=[]
+    print(r1)
     for j in top_points(i,15):
+        
         pos=r1.tolist().index(j)
         o=r1_results.tolist()[pos]
 
         neightboards+=[o]
-    print(neightboards)
+  
 
     kn_final=[]
     if (best_vote_percent(neightboards)==e):
@@ -257,8 +289,8 @@ print(win)
 print(fail)
 print((len(r1_tests)-fail)/len(r1_tests)*100)
 
-
-
+'''
+'''
 r2=samples_normalizar.get('trainingFeaturesFirstInclude')
 r2_tests=samples_normalizar.get('testingFeaturesFirstInclude')
 r2_results=samples_normalizar.get('trainingClassesSecond')
@@ -282,7 +314,7 @@ for i in r2_tests.tolist():
         o=r2_results.tolist()[pos]
 
         neightboards+=[o]
-    print(neightboards)
+ 
 
     kn_final=[]
     if (best_vote_percent(neightboards)==e):
@@ -293,3 +325,4 @@ for i in r2_tests.tolist():
 print(win)
 print(fail)
 print((len(r2_tests)-fail)/len(r2_tests)*100)
+'''
