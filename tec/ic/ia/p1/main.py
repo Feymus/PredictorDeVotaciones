@@ -1,6 +1,9 @@
 from sklearn.model_selection import train_test_split
 import csv
 import numpy as np
+import sys
+import getopt
+
 
 from Normalizer import Normalizer
 from SVMClassifier import SVMClassifier
@@ -66,7 +69,7 @@ def get_accuracy(classifier, toTrain, toTest):
         if (predictions[i] == testingClasses[i]):
             right += 1
 
-    accuracy = right/len(predictions)
+    accuracy = right / len(predictions)
 
     return (accuracy, predictions)
 
@@ -79,11 +82,11 @@ def holdout_cross_validation(
         testing_name,
         round):
 
-    quantity_for_testing = int(lenData*0.3)
+    quantity_for_testing = int(lenData * 0.3)
 
     toTrain = {
         "trainingFeatures": data[training_name],
-        "trainingClasses": data["trainingClasses"+round]
+        "trainingClasses": data["trainingClasses" + round]
     }
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -107,12 +110,12 @@ def holdout_cross_validation(
 
     toTrain = {
         "trainingFeatures": data[training_name],
-        "trainingClasses": data["trainingClasses"+round]
+        "trainingClasses": data["trainingClasses" + round]
     }
 
     toFinalTest = {
         "testingFeatures": data[testing_name],
-        "testingClasses": data["testingClasses"+round]
+        "testingClasses": data["testingClasses" + round]
     }
 
     accuracyReal, predictions = get_accuracy(classifier, toTrain, toFinalTest)
@@ -125,20 +128,22 @@ def show_accuracy(model, predictions):
     print("Tasa de error para: " + model)
     print()
     print("Cross validation>")
-    print("Primera ronda: " + str(1-predictions[0][0]))
-    print("Segunda ronda: " + str(1-predictions[1][0]))
-    print("Segunda ronda (con primera incluida): " + str(1-predictions[2][0]))
+    print("Primera ronda: " + str(1 - predictions[0][0]))
+    print("Segunda ronda: " + str(1 - predictions[1][0]))
+    print("Segunda ronda (con primera incluida): " +
+          str(1 - predictions[2][0]))
     print()
     print("Pruebas>")
-    print("Primera ronda: " + str(1-predictions[0][1]))
-    print("Segunda ronda: " + str(1-predictions[1][1]))
-    print("Segunda ronda (con primera incluida): " + str(1-predictions[2][1]))
+    print("Primera ronda: " + str(1 - predictions[0][1]))
+    print("Segunda ronda: " + str(1 - predictions[1][1]))
+    print("Segunda ronda (con primera incluida): " +
+          str(1 - predictions[2][1]))
     print("----------------------------------------------")
 
 
 def svm_classification(lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     samples = generar_muestra_pais(lenData)
-    quantity_for_testing = int(lenData*pctTest)
+    quantity_for_testing = int(lenData * pctTest)
 
     normalizer = Normalizer()
     data = normalizer.prepare_data(samples, quantity_for_testing)
@@ -178,9 +183,65 @@ def svm_classification(lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     make_csv(normalData, predictions)
 
 
-def main():
-    svm_classification(50000, 0.2, C=10, gamma=0.0083333, kernel="rbf")
+def main(argv):
+    # svm_classification(50000, 0.2, C=10, gamma=0.0083333, kernel="rbf")
+   
+    #print(argv)
+    if(len(argv)<5):
+        print("\n     ***INSTRUCCIONES***\n")
+        print("     main.py --poblacion<poblacion> --porcentaje-pruebas <porcentaje>  bandera\n")
+        print("     BANDERAS:\n")
+        print("*    --regresion-logistica [--l1 o --l2] ")
+        print("*    --red-neuronal --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ? ")
+        print("*    --knn --k <numero de vecinos>")
+        print("*    --arbol --umbral-poda <numero>")
+        print("*    --svm ?\n")
+    else:
+
+        if(argv[4]=="--regresion-logistica"):
+            print("REGRESION LOGISTICA")
+            if(len(argv)==6):
+                print(argv[5])
+            else:
+                print("ERROR: Parametros Incompletos")
+                print("Debe ingresar --l1 o --l2")
+
+        elif(argv[4]=="--red-neuronal"):
+            print("RED NEURONAL")
+            if(len(argv)==11):
+                print(argv[5])
+            else:
+                print("ERROR: Parametros Incompletos")
+                print("Debe ingresar --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ?")
+        elif(argv[4]=="--knn"):
+            print("KD-TREE")
+            if(len(argv)==7):
+                print(argv[6])
+            else:
+                print("ERROR: Parametros Incompletos")
+                print("Debe ingresar --k <numero de vecinos>")
+        elif(argv[4]=="--arbol"):
+            print("ARBOL DE DECISION")
+            if(len(argv)==7):
+                print(argv[6])
+            else:
+                print("ERROR: Parametros Incompletos")
+                print("Debe ingresar --umbral-poda <numero>")
+
+        elif(argv[4]=="--svm"):
+            print("SVM")
+            if(len(argv)==6):
+                print(argv[5])
+            else:
+                print("ERROR: Parametros Incompletos")
+                print("Debe ingresar ?")
+        else:
+             print("ERROR: Bandera inexistente")
+
+
+
+    #print(generar_muestra_pais(5))
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
