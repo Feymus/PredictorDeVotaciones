@@ -253,3 +253,27 @@ class Normalizer(object):
 
     def get_converted_data(self):
         return self.convertedData
+
+    '''
+    Compara el tamaño de dos listas y retorna el número del tamaño de la lista
+    más grande
+    Entrada: Recibe dos listas
+    Salida: Tamaño de la lista más grande
+    '''
+    def bigger_size(self, list1, list2):
+        if len(list1)>=len(list2):
+            return len(list1)
+        else:
+            return len(list2)
+
+
+    '''
+    Crea una lista de ceros del tamaño deseado
+    Entrada: Tamaño de la lista a crear
+    Salida: Lista con ceros del tamaño ingresado
+    '''
+    def extra_list(self, num):
+        temp = []
+        for i in range (num):
+            temp+=[0]
+        return temp
