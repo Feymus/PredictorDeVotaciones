@@ -18,7 +18,7 @@ political_party = ['ACCESIBILIDAD SIN EXCLUSION','ACCION CIUDADANA',
                    'UNIDAD SOCIAL CRISTIANA','NULO','BLANCO']
 
 
-class LogisticRegressionClassifier(object):
+class logistic_regression_classifier(object):
 
     '''Clasificador de Modelos de Regresion Logistica'''
     
@@ -184,5 +184,5 @@ class LogisticRegressionClassifier(object):
 
                 
 ##samples = generar_muestra_pais(2000)
-##prueba = LogisticRegressionClassifier(samples, 20, 1)
+##prueba = logistic_regression_classifier(samples, 20, 1)
 ##prueba.logistic_regression_r1()
