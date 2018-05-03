@@ -208,7 +208,7 @@ class Normalizer(object):
             "testingClassesSecond": y_test_second_round
         }
 
-    def separate_data(self, samples, pct_test):
+    def separate_data_2(self, samples, pct_test):
 
         samplesArray = np.array(samples)
         X = samplesArray
@@ -233,8 +233,8 @@ class Normalizer(object):
         self.normalData = {
             "trainingFeaturesFirst": X_train,
             "testingFeaturesFirst": X_test,
-            "trainingFeaturesFirst": X_train_2,
-            "testingFeaturesFirst": X_test_2,
+            "trainingFeaturesSecond": X_train_2,
+            "testingFeaturesSecond": X_test_2,
             "trainingFeaturesFirstInclude": X_train_3,
             "testingFeaturesFirstInclude": X_test_3
         }
@@ -242,8 +242,8 @@ class Normalizer(object):
         return {
             "trainingFeaturesFirst": X_train,
             "testingFeaturesFirst": X_test,
-            "trainingFeaturesFirst": X_train_2,
-            "testingFeaturesFirst": X_test_2,
+            "trainingFeaturesSecond": X_train_2,
+            "testingFeaturesSecond": X_test_2,
             "trainingFeaturesFirstInclude": X_train_3,
             "testingFeaturesFirstInclude": X_test_3
         }
