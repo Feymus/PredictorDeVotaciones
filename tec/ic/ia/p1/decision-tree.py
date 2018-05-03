@@ -16,7 +16,30 @@ import scipy.stats as stats
 import sys
 import operator
 
-#sys.setrecursionlimit(9999999)
+
+
+class DecisionTree():
+	def __init__(self):
+		self.tree = None
+		self.attr = None
+	def train(self,samples):
+		data=[]
+		for i in samples:
+			data+=[i[len(i)-1]]
+			data=list(set(data))
+		attr=[]
+		for i in range(len(samples[0])-1):
+			attr+=["attr"+str(i)]
+		self.attr=attr
+		self.tree= desition_tree(samples, attr, data)
+
+	def classify(self,test):
+		return self.tree.test(test,self.attr,test[len(test)-1])
+
+
+
+
+
 
 class Tree(object):
     "Generic tree node."
@@ -551,23 +574,25 @@ def desition_tree(samples, attr, data):
 	print("---------------------------------------------------------------------")
 	return (tree_test)
 
-
+'''
 # Our input list.
 values = [["Full","no"],["Full","no"],["Some","yes"],["Full","yes"],["Full","no"],["Some","yes"],["None","no"], ["Some","yes"],["Some","yes"],["Full","no"],["None","no"],["Full","yes"]]
 values2 = [["French","yes"],["French","no"],["Italian","yes"],["Italian","no"],["Thai","yes"],["Thai","yes"],["Thai","no"],["Thai","no"],["Burger","yes"],["Burger","yes"],["Burger","no"],["Burger","no"]]
 values3=[["Full","Thai","no"],["Full","French","no"],["Some","French","yes"],["Full","Thai","yes"],["Full","Italian","no"],["Some","Burger","yes"],["None","Burger","no"], ["Some","Italian","yes"],["Some","Thai","yes"],["Full","Burger","no"],["None","Thai","no"],["Full","Burger","yes"]]
+'''
 lenData = 6000
 samples = generar_muestra_pais(lenData)
+'''
 data=[]
 for i in samples:
 	data+=[i[len(i)-1]]
 data=list(set(data))
-
+'''
 
 
 lenData1 = 1000
 samples_pruning = generar_muestra_pais(lenData1)
-
+'''
 attr=[]
 for i in range(len(samples[0])-1):
 	attr+=["attr"+str(i)]
@@ -596,4 +621,5 @@ print("ACERTADOS:"+str(win))
 print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
+'''
 
