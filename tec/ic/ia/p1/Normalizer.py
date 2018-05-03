@@ -1,5 +1,6 @@
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.model_selection import train_test_split
+import copy
 import numpy as np
 
 
@@ -21,6 +22,7 @@ class Normalizer(object):
         self.converter = DictVectorizer(sparse=False)
         self.norm = norm
         self.normalData = {}
+        self.convertedData = {}
 
     '''
     Retorna los datos de las muestras pasadas por parametro en un diccionario
@@ -105,6 +107,14 @@ class Normalizer(object):
 
         return features
 
+    def convert_to_list(self, dict):
+        list = []
+
+        for key in dict:
+            list.append(dict[key])
+
+        return list
+
     '''
     Convierte los datos en numericos
     Entrada: lista de datos en forma de diccionario
@@ -145,6 +155,8 @@ class Normalizer(object):
         data["testingFeaturesFirstInclude"] = self.converter.transform(
             data["testingFeaturesFirstInclude"]
         )
+
+        self.convertedData = copy.deepcopy(data)
 
     '''
     Separa los datos en datos de entrenamiento y de pruebas
@@ -196,5 +208,48 @@ class Normalizer(object):
             "testingClassesSecond": y_test_second_round
         }
 
+    def separate_data(self, samples, pct_test):
+
+        samplesArray = np.array(samples)
+        X = samplesArray
+        y = samplesArray[:, 22:]
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=pct_test,
+            random_state=42
+        )
+
+        X_train_2 = np.delete(X_train, [22], axis=1)
+        X_test_2 = np.delete(X_test, [22], axis=1)
+
+        X_train_3 = X_train
+        X_test_3 = X_test
+
+        X_train = np.delete(X_train, [23], axis=1)
+        X_test = np.delete(X_train, [23], axis=1)
+
+        self.normalData = {
+            "trainingFeaturesFirst": X_train,
+            "testingFeaturesFirst": X_test,
+            "trainingFeaturesFirst": X_train_2,
+            "testingFeaturesFirst": X_test_2,
+            "trainingFeaturesFirstInclude": X_train_3,
+            "testingFeaturesFirstInclude": X_test_3
+        }
+
+        return {
+            "trainingFeaturesFirst": X_train,
+            "testingFeaturesFirst": X_test,
+            "trainingFeaturesFirst": X_train_2,
+            "testingFeaturesFirst": X_test_2,
+            "trainingFeaturesFirstInclude": X_train_3,
+            "testingFeaturesFirstInclude": X_test_3
+        }
+
     def get_normal_data(self):
         return self.normalData
+
+    def get_converted_data(self):
+        return self.convertedData
