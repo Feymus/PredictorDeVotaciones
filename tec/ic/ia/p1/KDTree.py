@@ -18,10 +18,13 @@ class Kd_Tree():
         self.tree = None
         self.samples = None
         self.neightboards = neightboards
+        self.results=None
 
     def train(self, samples):
-        samples=samples_normalizar.get('trainingFeatures')
-       
+        self.results = samples.get('trainingClasses')
+        samples=samples.get('trainingFeatures')
+        
+
         self.samples = samples
         self.tree = kd_trees(list(samples), 0)
 
@@ -29,13 +32,14 @@ class Kd_Tree():
     def classify(self, test):
         
         test=test[0]
-        
-        #printTree(self.tree)
+        #print(test)
+       
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
         neightboards = []
         for j in top_points(test, self.neightboards):
             pos = self.samples.tolist().index(j)
-            o = r1_results.tolist()[pos]
+            #print(pos)
+            o = self.results.tolist()[pos]
             neightboards += [o]
 
         return [best_vote_percent(neightboards)]
@@ -247,8 +251,8 @@ values3 = [
     ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
         "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
     ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
-
-lenData = 600
+'''
+lenData = 100
 samples = generar_muestra_pais(lenData)
 
 normalizer = Normalizer()
@@ -256,12 +260,13 @@ samples_normalizar = normalizer.prepare_data(samples, 0.2)
 
 r1 = samples_normalizar.get('trainingFeatures')
 r1_tests = samples_normalizar.get('testingFeatures')
-r1_results = samples_normalizar.get('trainingClassesFirst')
-r1_tests_results = samples_normalizar.get('testingClassesFirst')
-tree = Kd_Tree(15)
-tree.train(r1_tests)
+
+tree = Kd_Tree(3)
+tree.train(r1)
 print(r1_tests[0])
-#print(tree.classify(r1_tests[0]))
+for i in r1_tests:
+    print(tree.classify(i))
+'''
 '''
 
 r1_tree=kd_trees(list(r1),0)

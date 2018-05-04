@@ -94,12 +94,12 @@ def get_accuracy(classifier, toTrain, toTest):
 
     predictions = []
     classifier.train(toTrain)
-
+    
     for sample in toTest["testingFeatures"]:
         prediction = classifier.classify([sample])
         predictions.append(prediction[0])
 
-
+    
     testingClasses = toTest["testingClasses"]
     right = 0
 
@@ -109,7 +109,7 @@ def get_accuracy(classifier, toTrain, toTest):
 
     accuracy = right / len(predictions)
 
-    return (accuracy, predictions)
+    return (0, predictions)
 
 
 accList = []
@@ -394,7 +394,7 @@ def kd_tree_classification(k, lenData, pctTest, neightboards):
     normalData = normalizer.get_normal_data()
     predictions = [firstRound, secondRound, secondWithFirst]
 
-    show_accuracy("SVM", predictions)
+    show_accuracy("KD-TREE", predictions)
     make_csv(k, normalData, lenData, pctTest, predictions)
 
 def desicion_tree(k, lenData, pctTest,threshold):
