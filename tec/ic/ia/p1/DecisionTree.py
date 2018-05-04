@@ -144,11 +144,7 @@ class Tree(object):
             print(
                 "---------------------------------------------------------------------")
 
-    def total_votes(self):
-        tot = 0
-        for i in self.votes.keys():
-            tot += self.votes.get(i)
-        return tot
+
 
     def test(self, test_list, attributes, expected):
         dic = {}
@@ -192,19 +188,6 @@ class Tree(object):
             self.votes_test_result = {}
             self.votes_test_result[name] = 1
 
-    def total_table(self, table):
-        total = 0
-        for i in table:
-            total += sum(i)
-        return total
-
-    def total_column_observed_table(self, table, column):
-        sum_column = 0
-
-        for i in table:
-            if(i != []):
-                sum_column += i[column]
-        return sum_column
 
     def chi_square(self, data):
         desv = 0
@@ -214,9 +197,9 @@ class Tree(object):
                 if(i.votes_test_result != None):
                     if(i.votes_test_result.get(j) != None and self.votes_test_result.get(j) != None):
                         p = self.votes_test_result.get(j)
-                        n = sum_votes(self.votes_test_result) - p
+                        n = count_votes_dic(self.votes_test_result) - p
                         pk = i.votes_test_result.get(j)
-                        nk = sum_votes(i.votes_test_result) - pk
+                        nk = count_votes_dic(i.votes_test_result) - pk
                         pl = (pk + nk) / (p + n)
                         n_k = p * pl
                         desv += (n_k - pk)**2 / n_k
@@ -242,7 +225,7 @@ class Tree(object):
             return p
 
 
-def sum_votes(votes):
+def count_votes_dic(votes):
     val = 0
     for i in votes.keys():
         val += votes.get(i)
@@ -270,7 +253,7 @@ def decision_tree_learning(examples, attributes, parent_examples):
         A = get_attribute(exs_attribute)
         tree = Tree(attributes[importance_value], [])
         tree.set_gain(max_gain)
-        tree.votes = count_votes(examples)
+        tree.votes = count_votes_list(examples)
         for v in A:
 
             temp_attr = copy.copy(attributes)
@@ -287,12 +270,12 @@ def decision_tree_learning(examples, attributes, parent_examples):
                 else:
 
                     temp_tree = Tree(v, [Tree(subtree, [])])
-                temp_tree.votes = count_votes(exs)
+                temp_tree.votes = count_votes_list(exs)
                 tree.add_child(temp_tree)
         return tree
 
 
-def count_votes(examples):
+def count_votes_list(examples):
     temp_list = []
     for i in examples:
         temp_list += [i[len(i) - 1]]
