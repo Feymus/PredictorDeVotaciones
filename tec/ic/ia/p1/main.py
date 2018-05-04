@@ -10,8 +10,8 @@ from Normalizer import Normalizer
 from SVMClassifier import SVMClassifier
 from DecisionTree import DecisionTree
 from KDTree import Kd_Tree
-#from logisticRegression import logistic_regression_classifier
-#from neuralNetwork import neural_network_classifier
+# from logisticRegression import logistic_regression_classifier
+# from neuralNetwork import neural_network_classifier
 from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
     generar_muestra_provincia
@@ -90,16 +90,49 @@ def make_csv(k, data, lenData, pctTest, predictions):
         file.close()
 
 
+'''
 def get_accuracy(classifier, toTrain, toTest):
 
     predictions = []
     classifier.train(toTrain)
-    
+
+    i = 0
+    for sample in toTest["testingFeatures"]:
+
+        data = {
+            "testingFeatures": [sample],
+            "testingClasses": [toTest["testingClasses"][i]]
+        }
+
+        prediction = classifier.classify(data)
+        predictions.append(prediction[0])
+        i += 1
+
+
+    testingClasses = toTest["testingClasses"]
+    right = 0
+
+    # print("PREEE", predictions)
+    for i in range(0, len(predictions)):
+        print(predictions[i], " - ", testingClasses[i])
+        if (predictions[i] == testingClasses[i]):
+            right += 1
+
+    accuracy = right / len(predictions)
+
+    return (accuracy, predictions)
+'''
+
+
+def get_accuracy(classifier, toTrain, toTest):
+
+    predictions = []
+    classifier.train(toTrain)
+
     for sample in toTest["testingFeatures"]:
         prediction = classifier.classify([sample])
         predictions.append(prediction[0])
 
-    
     testingClasses = toTest["testingClasses"]
     right = 0
 
@@ -109,41 +142,12 @@ def get_accuracy(classifier, toTrain, toTest):
 
     accuracy = right / len(predictions)
 
-    return (0, predictions)
+    return (accuracy, predictions)
 
 
 accList = []
 
-def k_fold_cross_validation2(k, classifier, data, lenData):
-    groupLen = len(data["trainingFeatures"]) // k
-    group = 0
-    toTrain = {}
-    toTest = {}
-    results = []
 
-    while group < len(data["trainingFeatures"]):
-
-        testingFeatures = data["trainingFeatures"][group:group+groupLen]
-      
-
-        toTest["testingFeatures"] = testingFeatures
-       
-
-        trainingFeatures = np.append(
-            data["trainingFeatures"][:group],
-            data["trainingFeatures"][group+groupLen:],
-            axis=0
-        )
-
-
-        toTrain["trainingFeatures"] = trainingFeatures
-     
-
-        results.append(get_accuracy(classifier, toTrain, toTest))
-
-        group += groupLen
-
-    return results
 def k_fold_cross_validation(k, classifier, data, lenData):
     groupLen = len(data["trainingFeatures"]) // k
     group = 0
@@ -179,56 +183,6 @@ def k_fold_cross_validation(k, classifier, data, lenData):
         group += groupLen
 
     return results
-def cross_validation2(
-        k,
-        classifier,
-        data,
-        lenData,
-        training_name,
-        testing_name):
-
-    quantity_for_testing = int(lenData*0.3)
-    results = []
-
-    toTrain = {
-        "trainingFeatures": data[training_name],
-      
-    }
-
-    X_train = toTrain["trainingFeatures"][quantity_for_testing:]
-   
-
-    X_test = toTrain["trainingFeatures"][:quantity_for_testing]
-   
-
-    toTrain = {
-        "trainingFeatures": X_train,
-    
-    }
-
-    results = k_fold_cross_validation2(k, classifier, toTrain, lenData)
-
-    toTest = {
-        "testingFeatures": X_test,
-        
-    }
-
-    accuracyCV, predictionsCV = get_accuracy(classifier, toTrain, toTest)
-
-    toTrain = {
-        "trainingFeatures": data[training_name],
-     
-    }
-
-    toFinalTest = {
-        "testingFeatures": data[testing_name],
-      
-    }
-
-    accuracyReal, predictions = get_accuracy(classifier, toTrain, toFinalTest)
-    accList.append((accuracyCV, accuracyReal))
-
-    return (accuracyCV, predictionsCV, results, accuracyReal, predictions)
 
 
 def cross_validation(
@@ -313,6 +267,7 @@ def svm_classification(k, lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     data = normalizer.prepare_data(samples, quantity_for_testing)
 
     svmClassifier = SVMClassifier(kernel, C, gamma)
+
     firstRound = cross_validation(
         k,
         svmClassifier,
@@ -346,7 +301,7 @@ def svm_classification(k, lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     normalData = normalizer.get_normal_data()
     predictions = [firstRound, secondRound, secondWithFirst]
 
-    # show_accuracy("SVM", predictions)
+    show_accuracy("SVM", predictions)
     make_csv(k, normalData, lenData, pctTest, predictions)
 
 
@@ -397,56 +352,126 @@ def kd_tree_classification(k, lenData, pctTest, neightboards):
     show_accuracy("KD-TREE", predictions)
     make_csv(k, normalData, lenData, pctTest, predictions)
 
-def desicion_tree(k, lenData, pctTest,threshold):
-    
+
+def desicion_tree(k, lenData, pctTest, threshold):
+
+    clear_csv()
+
+    samples = generar_muestra_pais(lenData)
+    quantity_for_testing = int(lenData * pctTest)
+    print(quantity_for_testing)
+
+    normalizer = Normalizer()
+    data = normalizer.separate_data_2(samples, quantity_for_testing)
+
+    decisionTree = DecisionTree(threshold)
+    firstRound = cross_validation(
+        k,
+        decisionTree,
+        data,
+        lenData,
+        "trainingFeaturesFirst",
+        "testingFeaturesFirst",
+        "First"
+    )
+
+    secondRound = cross_validation(
+        k,
+        decisionTree,
+        data,
+        lenData,
+        "trainingFeaturesSecond",
+        "testingFeaturesSecond",
+        "Second"
+    )
+
+    secondWithFirst = cross_validation(
+        k,
+        decisionTree,
+        data,
+        lenData,
+        "trainingFeaturesFirstInclude",
+        "testingFeaturesFirstInclude",
+        "Second"
+    )
+
+    normalData = normalizer.get_normal_data()
+    predictions = [firstRound, secondRound, secondWithFirst]
+
+    show_accuracy("DT", predictions)
+    make_csv(k, normalData, lenData, pctTest, predictions)
+
+
+def lr_classification(k, lenData, pctTest, l_regulizer=1):
+
     clear_csv()
 
     samples = generar_muestra_pais(lenData)
     quantity_for_testing = int(lenData * pctTest)
 
     normalizer = Normalizer()
-    data = normalizer.separate_data_2(samples, quantity_for_testing)
+    data = normalizer.prepare_data(samples, quantity_for_testing)
 
-    decisionTree = DecisionTree(threshold)
-    firstRound = cross_validation2(
+    classes = np.append(
+        data["trainingClassesFirst"],
+        data["testingClassesFirst"],
+        axis=0
+    )
+    lrClassifier = logistic_regression_classifier(l_regulizer, classes)
+    '''
+    firstRound = cross_validation(
         k,
-        decisionTree,
+        lrClassifier,
         data,
         lenData,
-        "trainingFeaturesFirst",
-        "testingFeaturesFirst"
+        "trainingFeatures",
+        "testingFeatures",
+        "First"
     )
+    '''
+    classes = np.append(
+        data["trainingClassesSecond"],
+        data["testingClassesSecond"],
+        axis=0
+    )
+    lrClassifier = logistic_regression_classifier(l_regulizer, classes)
 
-    secondRound = cross_validation2(
+    secondRound = cross_validation(
         k,
-        decisionTree,
+        lrClassifier,
         data,
         lenData,
-        "trainingFeaturesSecond",
-        "testingFeaturesSecond"
+        "trainingFeatures",
+        "testingFeatures",
+        "Second"
     )
-
-    secondWithFirst = cross_validation2(
+    '''
+    secondWithFirst = cross_validation(
         k,
-        decisionTree,
+        lrClassifier,
         data,
         lenData,
         "trainingFeaturesFirstInclude",
-        "testingFeaturesFirstInclude"
-    
+        "testingFeaturesFirstInclude",
+        "Second"
     )
-
+    '''
     normalData = normalizer.get_normal_data()
-    predictions = [firstRound, secondRound, secondWithFirst]
-
-    # show_accuracy("SVM", predictions)
+    # predictions = [firstRound, secondRound, secondWithFirst]
+    predictions = [secondRound]
+    show_accuracy("LR", predictions)
     make_csv(k, normalData, lenData, pctTest, predictions)
+
+
+def main2():
+    lr_classification(10, 100, 0.2, l_regulizer=1)
+
 
 def pruebas():
     # svm_classification(1000, 0.2, C=10, gamma=0.00833333333, kernel="rbf")
     lenData = 5000
     print(lenData)
-    print("kernel: ", "rbf", " C: ", 1, " G: ", 1)
+    print("kernel: ", "sigmoid", " C: ", 10, " G: ", 'auto')
     pctTest = 0.2
 
     # samples = generar_muestra_provincia(lenData, "SAN JOSE")
@@ -466,7 +491,7 @@ def pruebas():
         normalizer = Normalizer()
         data = normalizer.prepare_data(samples, quantity_for_testing)
         svm_classification(
-            10, lenData, pctTest, C=1, gamma=1, kernel="rbf")
+            10, lenData, pctTest, C=10, gamma='auto', kernel="sigmoid")
 
     time2 = time.time()
 
@@ -530,7 +555,7 @@ def main(argv):
             if(len(argv)==7):
                 print(argv[6])
                 neightboards=int(argv[6])
-                kd_tree_classification(3, lenData, pctTest, neightboards)
+                kd_tree_classification(1, lenData, pctTest, neightboards)
             else:
                 print("ERROR: Parametros Incompletos")
                 print("Debe ingresar --k <numero de vecinos>")
@@ -539,7 +564,7 @@ def main(argv):
             if(len(argv)==7):
                 print(argv[6])
                 threshold=float(argv[6])
-                desicion_tree(3, lenData, pctTest,threshold)
+                desicion_tree(2, lenData, pctTest,threshold)
 
 
             else:
@@ -553,8 +578,11 @@ def main(argv):
                 # print(argv[5:])
                 k = argv[6]
                 c = float(argv[8])
-                g = float(argv[10])
-                svm_classification(3, lenData, pctTest, C=c, gamma=g, kernel=k)
+                try:
+                    g = float(argv[10])
+                except ValueError:
+                    g = argv[10]
+                svm_classification(10, lenData, pctTest, C=c, gamma=g, kernel=k)
 
             else:
                 print("ERROR: Parametros Incompletos")
@@ -569,3 +597,4 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+    # main2()

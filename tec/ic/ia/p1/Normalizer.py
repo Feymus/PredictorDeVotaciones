@@ -2,6 +2,7 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.model_selection import train_test_split
 import copy
 import numpy as np
+import tensorflow as tf
 
 
 class Normalizer(object):
@@ -23,6 +24,43 @@ class Normalizer(object):
         self.norm = norm
         self.normalData = {}
         self.convertedData = {}
+        self.tensorColumns = []
+
+    def create_columns_tensor(self, samples):
+        tf.feature_column.categorical_column_with_hash_bucket(
+            'province', hash_bucket_size=100)
+        tf.feature_column.numeric_column('numeric')
+
+        featureNum = 0
+        for feature in samples[0]:
+
+            try:
+                feature = float(feature)
+            except ValueError:
+                # La propiedad es un string
+                pass
+
+            featureNum = 0
+            for feature in featureList:
+                try:
+                    feature = float(feature)
+                except ValueError:
+                    # La propiedad es un string
+                    pass
+                dictFeatures[self.featureNames[featureNum]] = feature
+                featureNum += 1
+
+            features.append(dictFeatures)
+
+        return features
+
+
+    def prepare_data_tensor(self, samples, pct_test):
+        data = self.separate_data(samples, pct_test)
+
+        for key in data:
+            if "Classes" not in key:
+                data[key] = self.create_columns_tensor(data[key])
 
     '''
     Retorna los datos de las muestras pasadas por parametro en un diccionario
@@ -228,15 +266,25 @@ class Normalizer(object):
         X_test_3 = X_test
 
         X_train = np.delete(X_train, [23], axis=1)
-        X_test = np.delete(X_train, [23], axis=1)
+        X_test = np.delete(X_test, [23], axis=1)
+
+        y_train_first_round = y_train[:, 0]
+        y_train_second_round = y_train[:, 1]
+
+        y_test_first_round = y_test[:, 0]
+        y_test_second_round = y_test[:, 1]
 
         self.normalData = {
-            "trainingFeaturesFirst": X_train,
-            "testingFeaturesFirst": X_test,
+            "trainingFeatures": X_train,
+            "testingFeatures": X_test,
             "trainingFeaturesSecond": X_train_2,
             "testingFeaturesSecond": X_test_2,
             "trainingFeaturesFirstInclude": X_train_3,
-            "testingFeaturesFirstInclude": X_test_3
+            "testingFeaturesFirstInclude": X_test_3,
+            "trainingClassesFirst": y_train_first_round,
+            "trainingClassesSecond": y_train_second_round,
+            "testingClassesFirst": y_test_first_round,
+            "testingClassesSecond": y_test_second_round
         }
 
         return {
@@ -245,7 +293,11 @@ class Normalizer(object):
             "trainingFeaturesSecond": X_train_2,
             "testingFeaturesSecond": X_test_2,
             "trainingFeaturesFirstInclude": X_train_3,
-            "testingFeaturesFirstInclude": X_test_3
+            "testingFeaturesFirstInclude": X_test_3,
+            "trainingClassesFirst": y_train_first_round,
+            "trainingClassesSecond": y_train_second_round,
+            "testingClassesFirst": y_test_first_round,
+            "testingClassesSecond": y_test_second_round
         }
 
     def get_normal_data(self):

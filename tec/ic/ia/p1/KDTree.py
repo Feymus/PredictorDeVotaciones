@@ -23,17 +23,17 @@ class Kd_Tree():
     def train(self, samples):
         self.results = samples.get('trainingClasses')
         samples=samples.get('trainingFeatures')
-        
+
 
         self.samples = samples
         self.tree = kd_trees(list(samples), 0)
 
 
     def classify(self, test):
-        
+
         test=test[0]
         #print(test)
-       
+
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
         neightboards = []
         for j in top_points(test, self.neightboards):
@@ -246,7 +246,7 @@ def best_vote_percent(neightboards):
             best = i
     return best
 
-
+'''
 values3 = [
     ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
         "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
@@ -267,7 +267,7 @@ print(r1_tests[0])
 for i in r1_tests:
     print(tree.classify(i))
 '''
-'''
+
 
 r1_tree=kd_trees(list(r1),0)
 fail=0
