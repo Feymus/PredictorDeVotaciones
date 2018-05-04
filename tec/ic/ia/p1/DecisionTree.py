@@ -35,9 +35,10 @@ class DecisionTree():
     '''
 
     def train(self, samples):
-        #print(samples)
+        print(samples)
+     
         array_samples=samples["trainingFeatures"].tolist()
-        
+        prunning_tests=samples["testingFeatures"].tolist()
       
         data = []  # Contiene los posibles resultados
         for i in array_samples:
@@ -47,10 +48,15 @@ class DecisionTree():
         attr = []  # Contiene los atributos evaluados
         for i in range(len(array_samples[0]) - 1):
             attr += ["attr" + str(i)]
-        print(attr)    
+
         self.attr = attr
-        print(array_samples)
+       
         self.tree = desition_tree(array_samples, attr, data)
+        for i in prunning_tests:
+            result=self.tree.test(i,attr,i[len(i)-1])
+
+
+
         self.tree.pruning_chi(self.threshold, attr, data)
     '''
     Predice el valor según una muestra.
@@ -59,8 +65,10 @@ class DecisionTree():
     '''
 
     def classify(self, test):
-        print()
+        #test_sample=test
         test_sample=test[0].tolist()
+        print(test_sample)
+        #print(self.tree.test(test_sample, self.attr, test_sample[len(test_sample) - 1]))
         return self.tree.test(test_sample, self.attr, test_sample[len(test_sample) - 1])
 
 
@@ -242,9 +250,9 @@ def sum_votes(votes):
 
 
 def decision_tree_learning(examples, attributes, parent_examples):
-    print(examples)
-    print(attributes)
-    print(parent_examples)
+    #print(examples)
+    #print(attributes)
+    #print(parent_examples)
 
     if not examples:
 
@@ -509,8 +517,10 @@ values = [["Full","no"],["Full","no"],["Some","yes"],["Full","yes"],["Full","no"
 values2 = [["French","yes"],["French","no"],["Italian","yes"],["Italian","no"],["Thai","yes"],["Thai","yes"],["Thai","no"],["Thai","no"],["Burger","yes"],["Burger","yes"],["Burger","no"],["Burger","no"]]
 values3=[["Full","Thai","no"],["Full","French","no"],["Some","French","yes"],["Full","Thai","yes"],["Full","Italian","no"],["Some","Burger","yes"],["None","Burger","no"], ["Some","Italian","yes"],["Some","Thai","yes"],["Full","Burger","no"],["None","Thai","no"],["Full","Burger","yes"]]
 '''
-
 '''
+lenData = 6000
+samples = generar_muestra_pais(lenData)
+
 data=[]
 for i in samples:
 	data+=[i[len(i)-1]]
@@ -526,9 +536,23 @@ for i in range(len(samples[0])-1):
 	attr+=["attr"+str(i)]
 
 tree_test=desition_tree(samples, attr, data)
+fail=0
+win=0
+for i in samples_pruning:
+    result=tree_test.test(i,attr,i[len(i)-1])
+    if(result[0]==i[len(i)-1]):
+        win+=1
+    else:
+        fail+=1
 print("ARBOL NO PODADO")
 # tree_test.printTree()
-print(tree_test)
+print("---------------------------------------------------------------------")
+print("PODADO")
+print("---------------------------------------------------------------------")
+print("ACERTADOS:"+str(win))
+print("FALLADOS: "+str(fail))
+print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
+print("---------------------------------------------------------------------")
 tree_test.pruning_chi(0.2 , attr, data)
 
 
@@ -550,10 +574,19 @@ print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
 '''
-#nomalizer = Normalizer()
-#lenData = 6000
-#samples = generar_muestra_pais(lenData)
-#samples_normalizer = nomalizer.separate_data_2(samples, 0.2)
-#decisionTree = DecisionTree(0.2)
-#decisionTree.train(samples_normalizer["trainingFeaturesFirst"].tolist())
-#print(decisionTree.tree)
+'''
+nomalizer = Normalizer()
+lenData = 6000
+samples = generar_muestra_pais(lenData)
+samples_normalizer = nomalizer.separate_data_2(samples, 0.2)
+print(samples_normalizer)
+decisionTree = DecisionTree(0.2)
+decisionTree.train(samples_normalizer)
+tests=samples_normalizer["testingFeaturesFirst"].tolist()
+print(tests)
+for i in tests:
+    print(i)
+    print(decisionTree.classify(i))
+
+#)
+'''

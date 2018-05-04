@@ -177,7 +177,8 @@ def k_fold_cross_validation(k, classifier, data, lenData):
 
         toTrain["trainingFeatures"] = trainingFeatures
         toTrain["trainingClasses"] = trainingClasses
-        
+        toTrain["testingFeatures"] = testingFeatures
+        print(toTrain)
         results.append(get_accuracy(classifier, toTrain, toTest))
 
         group += groupLen

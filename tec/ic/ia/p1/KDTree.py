@@ -30,12 +30,13 @@ class Kd_Tree():
 
         self.r = samples2
         self.tree = kd_trees(list(self.r), 0)
+        print("TREE:"+str(self.tree)) 
 
 
     def classify(self, test):
         
         test=copy.copy(test[0])
-        print(test)
+        #print(test)
 
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
 
@@ -52,7 +53,7 @@ class Kd_Tree():
             #print(pos)
             o = self.results.tolist()[pos]
             neightboards += [o]
-        print([best_vote_percent(neightboards)])
+        #print([best_vote_percent(neightboards)])
         return [best_vote_percent(neightboards)]
 
 
