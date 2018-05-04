@@ -360,7 +360,6 @@ def desicion_tree(k, lenData, pctTest, threshold):
 
     samples = generar_muestra_pais(lenData)
     quantity_for_testing = int(lenData * pctTest)
-    print(quantity_for_testing)
 
     normalizer = Normalizer()
     data = normalizer.separate_data_2(samples, quantity_for_testing)
