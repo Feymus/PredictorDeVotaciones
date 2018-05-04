@@ -48,7 +48,7 @@ class logistic_regression_classifier(object):
             temp+=[political_party[lista[i].index(1)]]
         return temp
 
-    def train(self, data, scale, epochs):
+    def train(self, data, scale = 0.0001, epochs = 800):
         learning_rate = 0.05
         print("Learning rate: ",learning_rate)
         print("Scale: ", scale,"\n")
