@@ -321,9 +321,7 @@ def pruebas():
 
 
 def main(argv):
-    # svm_classification(50000, 0.2, C=10, gamma=0.0083333, kernel="rbf")
-
-    #print(argv)
+    # print(argv)
     if(len(argv)<5):
         print("\n     ***INSTRUCCIONES***\n")
         print("     main.py --poblacion<poblacion> --porcentaje-pruebas <porcentaje>  bandera\n")
@@ -332,8 +330,11 @@ def main(argv):
         print("*    --red-neuronal --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ? ")
         print("*    --knn --k <numero de vecinos>")
         print("*    --arbol --umbral-poda <numero>")
-        print("*    --svm ?\n")
+        print("*    --svm --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>\n")
     else:
+
+        lenData = int(argv[1])
+        pctTest = float(argv[3])/100.0
 
         if(argv[4]=="--regresion-logistica"):
             print("REGRESION LOGISTICA")
@@ -370,11 +371,17 @@ def main(argv):
 
         elif(argv[4]=="--svm"):
             print("SVM")
-            if(len(argv)==6):
-                print(argv[5])
+            print(len(argv))
+            if(len(argv)==11):
+                # print(argv[5:])
+                k = argv[6]
+                c = float(argv[8])
+                g = float(argv[10])
+                svm_classification(10, lenData, pctTest, C=c, gamma=g, kernel=k)
+
             else:
                 print("ERROR: Parametros Incompletos")
-                print("Debe ingresar ?")
+                print("Debe ingresar --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>")
         else:
              print("ERROR: Bandera inexistente")
 
