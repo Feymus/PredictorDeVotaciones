@@ -38,6 +38,62 @@ L1: Este se ingresa por medio de la bandera --l1 y es un nivel de regularizació
 
 L2: Este se ingresa por medio de la bandera --l2 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Ridge Regression" que se aplica a los pesos. 
 
+**Análisis de resultados**
+
+Para el análisis de este modelo se utilizarán muestras de tamaño de 100, 1000 y 5000. Para todas se guardará un dos por ciento de las muestras para realizar la prueba final, además se aplicarán la regularización l1 y l2 para cada grupo de muestras con una escala de 0.001, 0.00001 y 0.0000001.
+
+Con regularización L1:
+
+1) Regularizacion: l1, scale: 0.001
+
+|                   |   100   |   1000    |   5000    |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.40      |
+
+2) Regularizacion: l1, scale: 0.00001
+
+|                   |   100   |   1000    |   5000    |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.40      |
+
+3) Regularizacion: l1, scale: 0.0000001
+
+|                   |   100   |   1000    |   5000    |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.40      |
+
+Con regularización L2::
+
+1) Regularizacion: l2, scale: 0.001
+
+|                   |   100   |   1000    |   5000    |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.40      |
+
+2) Regularizacion: l2, scale: 0.00001
+
+|                   |   100   |   1000    |   5000    |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.40      |
+
+3) Regularizacion: l2, scale: 0.0000001
+
+|                   |   100   |   1000    |   5000    |
+|-------------------|---------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.40      |
+
 ### Redes neuronales
 
 **Parametros del modelo**
