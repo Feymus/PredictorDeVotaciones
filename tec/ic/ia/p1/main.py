@@ -177,7 +177,7 @@ def k_fold_cross_validation(k, classifier, data, lenData):
 
         toTrain["trainingFeatures"] = trainingFeatures
         toTrain["trainingClasses"] = trainingClasses
-
+        
         results.append(get_accuracy(classifier, toTrain, toTest))
 
         group += groupLen
@@ -315,10 +315,10 @@ def kd_tree_classification(k, lenData, pctTest, neightboards):
     normalizer = Normalizer()
     data = normalizer.prepare_data(samples, quantity_for_testing)
 
-    svmClassifier = Kd_Tree(neightboards)
+    kdTree = Kd_Tree(neightboards)
     firstRound = cross_validation(
         k,
-        svmClassifier,
+        kdTree,
         data,
         lenData,
         "trainingFeatures",
@@ -328,7 +328,7 @@ def kd_tree_classification(k, lenData, pctTest, neightboards):
 
     secondRound = cross_validation(
         k,
-        svmClassifier,
+        kdTree,
         data,
         lenData,
         "trainingFeatures",
@@ -338,7 +338,7 @@ def kd_tree_classification(k, lenData, pctTest, neightboards):
 
     secondWithFirst = cross_validation(
         k,
-        svmClassifier,
+        kdTree,
         data,
         lenData,
         "trainingFeaturesFirstInclude",
@@ -555,7 +555,7 @@ def main(argv):
             if(len(argv)==7):
                 print(argv[6])
                 neightboards=int(argv[6])
-                kd_tree_classification(1, lenData, pctTest, neightboards)
+                kd_tree_classification(2, lenData, pctTest, neightboards)
             else:
                 print("ERROR: Parametros Incompletos")
                 print("Debe ingresar --k <numero de vecinos>")

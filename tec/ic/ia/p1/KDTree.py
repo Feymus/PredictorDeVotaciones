@@ -16,37 +16,43 @@ class Kd_Tree():
 
     def __init__(self, neightboards):
         self.tree = None
-        self.samples = None
+        self.r = None
         self.neightboards = neightboards
         self.results=None
 
     def train(self, samples):
+        self.tree = None
+        self.r = None
         self.results = copy.copy(samples.get('trainingClasses'))
-        samples=copy.copy(samples.get('trainingFeatures'))
+        samples2=copy.copy(samples.get('trainingFeatures'))
         
 
 
-        self.samples = samples
-        self.tree = kd_trees(list(samples), 0)
+        self.r = samples2
+        self.tree = kd_trees(list(self.r), 0)
 
 
     def classify(self, test):
         
         test=copy.copy(test[0])
-        #print(test)
+        print(test)
 
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
 
         neightboards = []
-      
-        for j in top_points(test, self.neightboards):
-            print(j)
-            samples_list=self.samples.tolist()
+        #print(kn_final)
+        points=top_points(test, self.neightboards)
+        #print(len(points))
+        for j in points:
+            #print(j)
+            #print(samples)
+            #print(j)
+            samples_list=self.r.tolist()
             pos = samples_list.index(j)
             #print(pos)
             o = self.results.tolist()[pos]
             neightboards += [o]
-
+        print([best_vote_percent(neightboards)])
         return [best_vote_percent(neightboards)]
 
 
@@ -257,12 +263,13 @@ values3 = [
         "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
     ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
 '''
+
 lenData = 100
 samples = generar_muestra_pais(lenData)
 
 normalizer = Normalizer()
 samples_normalizar = normalizer.prepare_data(samples, 0.2)
-
+'''
 r1 = samples_normalizar.get('trainingFeatures')
 r1_tests = samples_normalizar.get('testingFeatures')
 
@@ -271,6 +278,7 @@ tree.train(r1)
 print(r1_tests[0])
 for i in r1_tests:
     print(tree.classify(i))
+    '''
 '''
 
 
@@ -322,7 +330,7 @@ fail=0
 win=0
 
 for i in r2_tests.tolist():
-
+    #print(i)
     mini_test=kdtree_closest_point(r2_tree,i,0,[]).tolist()
 
 
@@ -345,4 +353,5 @@ for i in r2_tests.tolist():
 print(win)
 print(fail)
 print((len(r2_tests)-fail)/len(r2_tests)*100)
+
 '''

@@ -2,7 +2,7 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.model_selection import train_test_split
 import copy
 import numpy as np
-import tensorflow as tf
+#import tensorflow as tf
 
 
 class Normalizer(object):
