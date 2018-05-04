@@ -37,7 +37,7 @@ class logistic_regression_classifier(object):
     Entradas: Lista con los nombres del partido
     Salida: Lista con los partidos cambiados a numeros
     """
-    def replace_political_party(party):
+    def replace_political_party(self, party):
         for i in range(len(party)):
             party[i] = political_party.index(party[i])
         return party
@@ -80,8 +80,8 @@ class logistic_regression_classifier(object):
 
         with tf.name_scope("calculating_cost"):
             # calculando costo
-            cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y,
-                                                                             logits=y_))
+            cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y,
+                                                                             logits=self.y_))
 
         with tf.name_scope("regulizer"):
             if (self.l_regulizer == 1):
