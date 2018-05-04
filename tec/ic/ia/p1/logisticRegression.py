@@ -123,7 +123,6 @@ class logistic_regression_classifier(object):
 
             oneHot = OneHotEncoder()
             test_y = replace_political_party(test_y).reshape(-1,1)
-            oneHot.fit(test_y)
             test_y = oneHot.transform(test_y).toarray()
             
             return toparty(self.y.eval({self.X: test_x, self.y: test_y}).tolist())
