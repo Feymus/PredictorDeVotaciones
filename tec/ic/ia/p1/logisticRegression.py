@@ -24,8 +24,6 @@ class logistic_regression_classifier(object):
     
 
     def __init__(self, l_regulizer):
-        self.samples = samples
-        self.test_percent = test_percent
         self.l_regulizer = l_regulizer
         self.X = None
         self.y = None
