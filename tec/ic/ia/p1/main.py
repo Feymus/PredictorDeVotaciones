@@ -10,6 +10,8 @@ from Normalizer import Normalizer
 from SVMClassifier import SVMClassifier
 from DecisionTree import DecisionTree
 from KDTree import Kd_Tree
+from logisticRegression import logistic_regression_classifier
+from neuralNetwork import neural_network_classifier
 from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
     generar_muestra_provincia
