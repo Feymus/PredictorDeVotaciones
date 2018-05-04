@@ -35,15 +35,22 @@ class DecisionTree():
     '''
 
     def train(self, samples):
+        #print(samples)
+        array_samples=samples["trainingFeatures"].tolist()
+        
+      
         data = []  # Contiene los posibles resultados
-        for i in samples:
+        for i in array_samples:
             data += [i[len(i) - 1]]
             data = list(set(data))
+  
         attr = []  # Contiene los atributos evaluados
-        for i in range(len(samples[0]) - 1):
+        for i in range(len(array_samples[0]) - 1):
             attr += ["attr" + str(i)]
+        print(attr)    
         self.attr = attr
-        self.tree = desition_tree(samples, attr, data)
+        print(array_samples)
+        self.tree = desition_tree(array_samples, attr, data)
         self.tree.pruning_chi(self.threshold, attr, data)
     '''
     Predice el valor según una muestra.
@@ -52,7 +59,9 @@ class DecisionTree():
     '''
 
     def classify(self, test):
-        return self.tree.test(test, self.attr, test[len(test) - 1])
+        print()
+        test_sample=test[0].tolist()
+        return self.tree.test(test_sample, self.attr, test_sample[len(test_sample) - 1])
 
 
 class Tree(object):
@@ -233,6 +242,9 @@ def sum_votes(votes):
 
 
 def decision_tree_learning(examples, attributes, parent_examples):
+    print(examples)
+    print(attributes)
+    print(parent_examples)
 
     if not examples:
 
@@ -538,10 +550,10 @@ print("FALLADOS: "+str(fail))
 print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
 print("---------------------------------------------------------------------")
 '''
-nomalizer = Normalizer()
-lenData = 6000
-samples = generar_muestra_pais(lenData)
-samples_normalizer = nomalizer.separate_data_2(samples, 0.2)
-decisionTree = DecisionTree(0.2)
-decisionTree.train(samples_normalizer["trainingFeaturesFirst"].tolist())
+#nomalizer = Normalizer()
+#lenData = 6000
+#samples = generar_muestra_pais(lenData)
+#samples_normalizer = nomalizer.separate_data_2(samples, 0.2)
+#decisionTree = DecisionTree(0.2)
+#decisionTree.train(samples_normalizer["trainingFeaturesFirst"].tolist())
 #print(decisionTree.tree)
