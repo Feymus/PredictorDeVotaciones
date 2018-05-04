@@ -99,6 +99,7 @@ def get_accuracy(classifier, toTrain, toTest):
         prediction = classifier.classify([sample])
         predictions.append(prediction[0])
 
+
     testingClasses = toTest["testingClasses"]
     right = 0
 
@@ -348,6 +349,54 @@ def svm_classification(k, lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     # show_accuracy("SVM", predictions)
     make_csv(k, normalData, lenData, pctTest, predictions)
 
+
+def kd_tree_classification(k, lenData, pctTest, neightboards):
+
+    clear_csv()
+
+    samples = generar_muestra_pais(lenData)
+    quantity_for_testing = int(lenData * pctTest)
+
+    normalizer = Normalizer()
+    data = normalizer.prepare_data(samples, quantity_for_testing)
+
+    svmClassifier = Kd_Tree(neightboards)
+    firstRound = cross_validation(
+        k,
+        svmClassifier,
+        data,
+        lenData,
+        "trainingFeatures",
+        "testingFeatures",
+        "First"
+    )
+
+    secondRound = cross_validation(
+        k,
+        svmClassifier,
+        data,
+        lenData,
+        "trainingFeatures",
+        "testingFeatures",
+        "Second"
+    )
+
+    secondWithFirst = cross_validation(
+        k,
+        svmClassifier,
+        data,
+        lenData,
+        "trainingFeaturesFirstInclude",
+        "testingFeaturesFirstInclude",
+        "Second"
+    )
+
+    normalData = normalizer.get_normal_data()
+    predictions = [firstRound, secondRound, secondWithFirst]
+
+    show_accuracy("SVM", predictions)
+    make_csv(k, normalData, lenData, pctTest, predictions)
+
 def desicion_tree(k, lenData, pctTest,threshold):
     
     clear_csv()
@@ -480,7 +529,8 @@ def main(argv):
             print("KD-TREE")
             if(len(argv)==7):
                 print(argv[6])
-                kd_tree=Kd_Tree(argv[6])
+                neightboards=int(argv[6])
+                kd_tree_classification(3, lenData, pctTest, neightboards)
             else:
                 print("ERROR: Parametros Incompletos")
                 print("Debe ingresar --k <numero de vecinos>")
@@ -490,6 +540,7 @@ def main(argv):
                 print(argv[6])
                 threshold=float(argv[6])
                 desicion_tree(3, lenData, pctTest,threshold)
+
 
             else:
                 print("ERROR: Parametros Incompletos")

@@ -20,10 +20,17 @@ class Kd_Tree():
         self.neightboards = neightboards
 
     def train(self, samples):
+        samples=samples_normalizar.get('trainingFeatures')
+       
         self.samples = samples
         self.tree = kd_trees(list(samples), 0)
 
+
     def classify(self, test):
+        
+        test=test[0]
+        
+        #printTree(self.tree)
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
         neightboards = []
         for j in top_points(test, self.neightboards):
@@ -31,7 +38,7 @@ class Kd_Tree():
             o = r1_results.tolist()[pos]
             neightboards += [o]
 
-        return best_vote_percent(neightboards)
+        return [best_vote_percent(neightboards)]
 
 
 class BinaryTree():
@@ -253,6 +260,7 @@ r1_results = samples_normalizar.get('trainingClassesFirst')
 r1_tests_results = samples_normalizar.get('testingClassesFirst')
 tree = Kd_Tree(15)
 tree.train(r1_tests)
+print(r1_tests[0])
 #print(tree.classify(r1_tests[0]))
 '''
 
