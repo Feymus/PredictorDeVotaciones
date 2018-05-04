@@ -21,8 +21,9 @@ class Kd_Tree():
         self.results=None
 
     def train(self, samples):
-        self.results = samples.get('trainingClasses')
-        samples=samples.get('trainingFeatures')
+        self.results = copy.copy(samples.get('trainingClasses'))
+        samples=copy.copy(samples.get('trainingFeatures'))
+        
 
 
         self.samples = samples
@@ -30,14 +31,18 @@ class Kd_Tree():
 
 
     def classify(self, test):
-
-        test=test[0]
+        
+        test=copy.copy(test[0])
         #print(test)
 
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
+
         neightboards = []
+      
         for j in top_points(test, self.neightboards):
-            pos = self.samples.tolist().index(j)
+            print(j)
+            samples_list=self.samples.tolist()
+            pos = samples_list.index(j)
             #print(pos)
             o = self.results.tolist()[pos]
             neightboards += [o]
