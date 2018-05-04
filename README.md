@@ -32,9 +32,24 @@ Para la clasificación SVM y manejo de los datos se usó principalmente la libre
 
 **Parametros del modelo**
 
+Este modelo recibirá como parámetro el tipo de regularización que se quiere aplicar en el modelo, las cuales son L1 y L2. 
+
+L1: Este se ingresa por medio de la bandera --l1 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Lasso Regression" que se aplica a los pesos. 
+
+L2: Este se ingresa por medio de la bandera --l2 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Ridge Regression" que se aplica a los pesos. 
+
 ### Redes neuronales
 
 **Parametros del modelo**
+
+El modelo de la Red Neuronal trabaja con 3 parámetros, los cuales son layers, las unit_per_layer y la activation_func. Estos se explican a continuación:
+
+layers: Define la cantidad de capas que se quiere agregar al modelo de la red neuronal para su entrenamiento.
+
+unit_per_layer: Establece las unidades que se le quiere asignar a cada capa agregada anteriormente para asignarle la dimensionalidad del espacio de salida de la capa.
+
+activation_func: Esta es la función de activación que se quiere utilizar en las capaz agregadas, este puede ser 'relu', 'sigmoid' o 'tanh'.
+
 
 ### Árboles de decisión
 ### KNN
