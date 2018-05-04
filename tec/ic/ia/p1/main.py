@@ -178,7 +178,7 @@ def k_fold_cross_validation(k, classifier, data, lenData):
         toTrain["trainingFeatures"] = trainingFeatures
         toTrain["trainingClasses"] = trainingClasses
         toTrain["testingFeatures"] = testingFeatures
-        print(toTrain)
+        
         results.append(get_accuracy(classifier, toTrain, toTest))
 
         group += groupLen
@@ -211,7 +211,8 @@ def cross_validation(
 
     toTrain = {
         "trainingFeatures": X_train,
-        "trainingClasses": y_train
+        "trainingClasses": y_train,
+        "testingFeatures": X_test
     }
 
     results = k_fold_cross_validation(k, classifier, toTrain, lenData)
@@ -225,7 +226,8 @@ def cross_validation(
 
     toTrain = {
         "trainingFeatures": data[training_name],
-        "trainingClasses": data["trainingClasses" + round]
+        "trainingClasses": data["trainingClasses" + round],
+        "testingFeatures": data[testing_name]
     }
 
     toFinalTest = {
