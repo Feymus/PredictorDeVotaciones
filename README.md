@@ -1,4 +1,4 @@
-PredictorDeVotaciones
+Predictor De Votaciones
 =====================
 
 La clasificación es aquel proceso que nos permite asignar objetos a diferentes categorías predefinidas, un modelo de clasificación intenta extraer alguna conclusión de los valores observados. Dadas una o más entradas al modelo de clasificación, intentaremos predecir el valor de uno o más resultados. Los resultados son etiquetas que se pueden aplicar a un conjunto de datos. Por ejemplo, al filtrar correos electrónicos "spam" o "no spam"
@@ -25,7 +25,7 @@ Como fue mencionado el simulador utiliza los datos de Indicadores Cantonales y C
 
 ### Librerías utilizadas
 
-Para la clasificación SVM y manejo de los datos se usó principalmente la librería scikit de python junto con numpy.
+Para la clasificación SVM y manejo de los datos se usó principalmente la librería scikit de python junto con numpy. En la clasificación por Modelos Lineales se utilizó la librería de Tensorflow para la creación de los tensores que nos ayudan a la clasificación de los datos por medio de una regresión logística y la librería OneHotEncoder, el cual es un proceso mediante el cual las variables categóricas se convierten en una forma que podría proporcionarse a los algoritmos de modelos lineales para hacer un mejor trabajo en la predicción. La clasificación por Redes Neuronales además de haber utilizado las librerías mencionadas anteriormente con el mismo objetivo, a este se le incorpora la librería de Keras, el cuál nos permite crear las capas de las neuronal 
 
 ## Reportes
 ### Modelos lineales
