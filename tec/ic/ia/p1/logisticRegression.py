@@ -23,12 +23,15 @@ class logistic_regression_classifier(object):
     '''Clasificador de Modelos de Regresion Logistica'''
     
 
-    def __init__(self, samples, test_percent, l_regulizer):
+    def __init__(self, l_regulizer):
         self.samples = samples
         self.test_percent = test_percent
         self.l_regulizer = l_regulizer
-
-
+        self.X = None
+        self.y = None
+        self.W = None
+        self.b = None
+        self.y_ = None
 
     """
     Cambia los partidos politicos por un numero, el cual va a ser el indice que tienen en la
@@ -36,108 +39,51 @@ class logistic_regression_classifier(object):
     Entradas: Lista con los nombres del partido
     Salida: Lista con los partidos cambiados a numeros
     """
-    def replace_political_party(self, party):
+    def replace_political_party(party):
         for i in range(len(party)):
-            party[i] = political_party.index(party[i].upper())
+            party[i] = political_party.index(party[i])
         return party
 
-    """
-    Regresion logistica para la primera ronda
-    """
-    def logistic_regression_r1(self):
-        print("\n------FIRST ROUND------\n")
-        
-        quantity_for_testing = int(len(self.samples)*0.2)
-        normalizer = Normalizer()
-        data = normalizer.prepare_data(self.samples, quantity_for_testing)
+    def toparty(self, lista):
+        temp = []
+        for i in range(len(lista)):
+            temp+=[political_party[lista[i].index(1)]]
+        return temp
 
-        train_x = data["trainingFeatures"]
-        train_y = data["trainingClassesFirst"]
-        test_x = data["testingFeatures"]
-        test_y = data["testingClassesFirst"]
-        self.logic_regression(train_x , train_y, test_x, test_y)
-
-    """
-    Regresion logistica para la segunda ronda
-    """
-    def logistic_regression_r2(self):
-        print("\n------SECOND ROUND------\n")
-
-        quantity_for_testing = int(len(self.samples)*0.2)
-        normalizer = Normalizer()
-        data = normalizer.prepare_data(self.samples, quantity_for_testing)
-
-        train_x = data["trainingFeatures"]
-        train_y = data["trainingClassesSecond"]
-        test_x = data["testingFeatures"]
-        test_y = data["testingClassesSecond"]
-        logic_regression(train_x , train_y, test_x, test_y)
-
-    """
-    Regresion logistica para la primera y segunda ronda
-    """
-    def logistic_regression_r2_r1(self):
-        print("\n------THIRD ROUND------\n")
-
-        quantity_for_testing = int(len(self.samples)*0.2)
-        normalizer = Normalizer()
-        data = normalizer.prepare_data(self.samples, quantity_for_testing)
-
-        train_x = data["trainingFeaturesFirstInclude"]
-        train_y = data["trainingClassesSecond"]
-        test_x = data["testingFeaturesFirstInclude"]
-        test_y = data["testingClassesSecond"]
-        logic_regression(train_x , train_y, test_x, test_y)
-
-    """
-    Funcion de Regresion logistica
-    """
-    def logic_regression(self, train_x , train_y, test_x, test_y):
-     
-        learning_rate = 0.5
+    def train(self, data, scale, epochs):
+        learning_rate = 0.05
         print("Learning rate: ",learning_rate)
-        scale = 0.0001
         print("Scale: ", scale,"\n")
-        epochs = 800
         print("Epochs: ", epochs)
         display_step = 1
 
+        train_x = data["trainingFeatures"]
+        train_y = data["trainingClasses"]
+
         oneHot = OneHotEncoder()
-        train_y = self.replace_political_party(train_y).reshape(-1,1)
+        train_y = replace_political_party(train_y).reshape(-1,1)
         oneHot.fit(train_y)
         train_y = oneHot.transform(train_y).toarray()
-
-        test_y = self.replace_political_party(test_y).reshape(-1,1)
-        oneHot.fit(test_y)
-        test_y = oneHot.transform(test_y).toarray()
-
-        #train_x, test_x, train_y, test_y = train_test_split(x, y, test_size = test_percent, random_state=0)
-
-        #Descomentar para ver el shape de cada test y train
-##        print("Shape of X_train: ", train_x.shape)
-##        print("Shape of y_train: ", train_y.shape)
-##        print("Shape of X_test: ", test_x.shape)
-##        print("Shape of y_test", test_y.shape)
-##        print(" ")
 
         shape_x = train_x.shape[1]
         shape_y = train_y.shape[1]
         
         with tf.name_scope("Declaring_placeholder"):
-            X = tf.placeholder(tf.float32, shape = [None, shape_x])
-            y = tf.placeholder(tf.float32, shape = [None, None])
+            self.X = tf.placeholder(tf.float32, shape = [None, shape_x])
+            self.y = tf.placeholder(tf.float32, shape = [None, shape_y])
 
         #Weights
         with tf.name_scope("Declaring_variables"):
-            W = tf.Variable(tf.zeros([shape_x, shape_y]))
-            b = tf.Variable(tf.zeros([shape_y]))
+            self.W = tf.Variable(tf.zeros([shape_x, shape_y]))
+            self.b = tf.Variable(tf.zeros([shape_y]))
 
-        with tf.name_scope("Declaring_functions"):
-            y_ = tf.nn.softmax(tf.add(tf.matmul(X, W), b))
+        with tf.name_scope("Prediction_functions"):
+            self.y_ = tf.nn.softmax(tf.add(tf.matmul(self.X, self.W), self.b))
 
         with tf.name_scope("calculating_cost"):
             # calculando costo
-            cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=y_))
+            cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y,
+                                                                             logits=y_))
 
         with tf.name_scope("regulizer"):
             if (self.l_regulizer == 1):
@@ -168,21 +114,18 @@ class logistic_regression_classifier(object):
                 for epoch in range(epochs):
                     cost_in_each_epoch = 0
                     # empieza el entrenamiento
-                    _, c = sess.run([optimizer, cost], feed_dict={X: train_x, y: train_y})
+                    _, c = sess.run([optimizer, cost], feed_dict={self.X: train_x,
+                                                                  self.y: train_y})
                     cost_in_each_epoch += c
-                      # you can uncomment next two lines of code for printing cost when training
-##                    if (epoch+1) % display_step == 0:
-##                        print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
-                
-                print("Optimization Finished!")
+    ##                # you can uncomment next two lines of code for printing cost when training
+    ##                if (epoch+1) % display_step == 0:
+    ##                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
 
-                # Test model
-                correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(y, 1))
-                # calcula el accuracy
-                accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-                print("Accuracy:", accuracy.eval({X: train_x, y: train_y})*100)
 
-                
-##samples = generar_muestra_pais(2000)
-##prueba = logistic_regression_classifier(samples, 20, 1)
-##prueba.logistic_regression_r1()
+        def classify(self,data):
+            test_x = data["testingFeatures"]
+            test_y = data["testingClasses"]
+            return toparty(self.y.eval({self.X: test_x, self.y: test_y}).tolist()))
+            
+
+        
