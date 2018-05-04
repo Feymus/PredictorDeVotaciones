@@ -14,9 +14,10 @@ import random
 
 class Kd_Tree():
 
-    def __init__(self):
+    def __init__(self, neightboards):
         self.tree = None
         self.samples = None
+        self.neightboards = neightboards
 
     def train(self, samples):
         self.samples = samples
@@ -25,7 +26,7 @@ class Kd_Tree():
     def classify(self, test):
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
         neightboards = []
-        for j in top_points(test, 15):
+        for j in top_points(test, self.neightboards):
             pos = self.samples.tolist().index(j)
             o = r1_results.tolist()[pos]
             neightboards += [o]
@@ -250,9 +251,9 @@ r1 = samples_normalizar.get('trainingFeatures')
 r1_tests = samples_normalizar.get('testingFeatures')
 r1_results = samples_normalizar.get('trainingClassesFirst')
 r1_tests_results = samples_normalizar.get('testingClassesFirst')
-tree = Kd_Tree()
+tree = Kd_Tree(15)
 tree.train(r1_tests)
-print(tree.classify(r1_tests[0]))
+#print(tree.classify(r1_tests[0]))
 '''
 
 r1_tree=kd_trees(list(r1),0)

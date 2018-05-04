@@ -19,33 +19,35 @@ import operator
 
 class DecisionTree():
 
-	'''
+    '''
     Método que trae por default python que inicializa la clase.
 
     '''
 
-    def __init__(self):
+    def __init__(self, threshold):
         self.tree = None  # Guarda el Árbol Generado
-        self.attr = None # Contiene la lista de atributos evaluados 
+        self.attr = None  # Contiene la lista de atributos evaluados
+        self.threshold = threshold
     '''
     Entrena el modelo con los conjuntos de datos dados.
     Entrada: una lista con las muestras de entrenamiento.
     Salida: NA
     '''
+
     def train(self, samples):
-        data = []# Contiene los posibles resultados 
+        data = []  # Contiene los posibles resultados
         for i in samples:
             data += [i[len(i) - 1]]
             data = list(set(data))
-        attr = [] # Contiene los atributos evaluados
+        attr = []  # Contiene los atributos evaluados
         for i in range(len(samples[0]) - 1):
             attr += ["attr" + str(i)]
         self.attr = attr
         self.tree = desition_tree(samples, attr, data)
-        self.tree.pruning_chi(0.2, attr, data)
+        self.tree.pruning_chi(self.threshold, attr, data)
     '''
     Predice el valor según una muestra.
-    Entrada: una lista con los atributos y el valor esperado. 
+    Entrada: una lista con los atributos y el valor esperado.
     Salida: NA
     '''
 
@@ -54,12 +56,11 @@ class DecisionTree():
 
 
 class Tree(object):
-
-	'''
+    '''
     Método que trae por default python que inicializa la clase.
     Entrada: el nombre de la raíz.
     Salida: NA
- 
+
     '''
     def __init__(self, name='root', children=None):
 
@@ -541,6 +542,6 @@ nomalizer = Normalizer()
 lenData = 6000
 samples = generar_muestra_pais(lenData)
 samples_normalizer = nomalizer.separate_data_2(samples, 0.2)
-decisionTree = DecisionTree()
+decisionTree = DecisionTree(0.2)
 decisionTree.train(samples_normalizer["trainingFeaturesFirst"].tolist())
 print(decisionTree.tree)

@@ -8,7 +8,8 @@ import time
 
 from Normalizer import Normalizer
 from SVMClassifier import SVMClassifier
-
+from DecisionTree import DecisionTree
+from KDTree import Kd_Tree
 from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
     generar_muestra_provincia
@@ -353,6 +354,7 @@ def main(argv):
             print("KD-TREE")
             if(len(argv)==7):
                 print(argv[6])
+                kd_tree=Kd_Tree(argv[6])
             else:
                 print("ERROR: Parametros Incompletos")
                 print("Debe ingresar --k <numero de vecinos>")
@@ -360,6 +362,8 @@ def main(argv):
             print("ARBOL DE DECISION")
             if(len(argv)==7):
                 print(argv[6])
+                decision_tree_r1= DecisionTree(argv[6])
+
             else:
                 print("ERROR: Parametros Incompletos")
                 print("Debe ingresar --umbral-poda <numero>")
