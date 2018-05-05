@@ -25,16 +25,20 @@ class Kd_Tree():
         self.r = None
         self.results = copy.copy(samples.get('trainingClasses'))
         samples2=copy.copy(samples.get('trainingFeatures'))
-        
+
 
 
         self.r = samples2
         self.tree = kd_trees(list(self.r), 0)
+<<<<<<< Updated upstream
      
 
+=======
+        print("TREE:"+str(self.tree))
+>>>>>>> Stashed changes
 
     def classify(self, test):
-        
+
         test=copy.copy(test[0])
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
        
@@ -260,11 +264,14 @@ values3 = [
     ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
 '''
 
+'''
 lenData = 100
 samples = generar_muestra_pais(lenData)
 
 normalizer = Normalizer()
 samples_normalizar = normalizer.prepare_data(samples, 0.2)
+'''
+
 '''
 r1 = samples_normalizar.get('trainingFeatures')
 r1_tests = samples_normalizar.get('testingFeatures')
@@ -274,10 +281,10 @@ tree.train(r1)
 print(r1_tests[0])
 for i in r1_tests:
     print(tree.classify(i))
-    '''
+
 '''
 
-
+'''
 r1_tree=kd_trees(list(r1),0)
 fail=0
 win=0

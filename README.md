@@ -32,11 +32,11 @@ Para la clasificación SVM y manejo de los datos se usó principalmente la libre
 
 **Parametros del modelo**
 
-Este modelo recibirá como parámetro el tipo de regularización que se quiere aplicar en el modelo, las cuales son L1 y L2. 
+Este modelo recibirá como parámetro el tipo de regularización que se quiere aplicar en el modelo, las cuales son L1 y L2.
 
-L1: Este se ingresa por medio de la bandera --l1 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Lasso Regression" que se aplica a los pesos. 
+L1: Este se ingresa por medio de la bandera --l1 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Lasso Regression" que se aplica a los pesos.
 
-L2: Este se ingresa por medio de la bandera --l2 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Ridge Regression" que se aplica a los pesos. 
+L2: Este se ingresa por medio de la bandera --l2 y es un nivel de regularización provisto por tensorflow que utiliza la técnica "Ridge Regression" que se aplica a los pesos.
 
 **Análisis de resultados**
 
@@ -136,7 +136,7 @@ Gamma: Define cuánta influencia tiene un único ejemplo de entrenamiento. Cuant
 
 **Análisis de resultados**
 
-Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000 y 5000, para todas se guardará un dos por ciento de las muestras para realizar la prueba final. Además, en SVM se probarán los kernel "rbf" y "sigmoid", para los valores de C se probarán valores 1 y 10, para gamma se probarán valores exponenciales de 1 a 0.000000001 y el valor auto (que se calcula segun la cantidad de propiedades).
+Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000, 2500 (solo rbf) y 5000, para todas se guardará un dos por ciento de las muestras para realizar la prueba final. Además, en SVM se probarán los kernel "rbf" y "sigmoid", para los valores de C se probarán valores 1 y 10, para gamma se probarán valores exponenciales de 1 a 0.000000001 y el valor auto (que se calcula segun la cantidad de propiedades).
 
 Cada prueba muestra el error de entrenamiento (ER) promedio del modelo luego de 30 corridas.
 
@@ -144,51 +144,51 @@ Pruebas (rbf):
 
 1) Kernel: rbf, C: 1, Gamma: 1
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+|                   |   100   |   1000    | 2500    |   5000    |
+|-------------------|---------|-----------|-----------|-----------|
+| Primera ronda     |  0.772  |   0.77    | 0.761   | 0.73      |
+| Segunda ronda     |  0.444  |   0.41    | 0.42    | 0.41      |
+| Basado en primera |  0.445  |   0.39    | 0.41    | 0.40      |
 
 2) Kernel: rbf, C: 1, Gamma: 0.000000001
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.792   |  0.766    | 0.7448    |
-| Segunda ronda     | 0.442   |  0.4      | 0.4       |
-| Basado en primera | 0.442   |  0.4      | 0.4       |
+|                   |   100   |   1000    | 2500      |   5000    |
+|-------------------|---------|-----------|-----------|-----------|
+| Primera ronda     | 0.792   |  0.766    | 0.75    | 0.7448    |
+| Segunda ronda     | 0.442   |  0.4      | 0.4     | 0.4       |
+| Basado en primera | 0.442   |  0.4      | 0.4     | 0.4       |
 
 2) Kernel: rbf, C: 1, Gamma: auto
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.762   |  0.74     | 0.7294    |
-| Segunda ronda     | 0.432   |  0.3975   | 0.378     |
-| Basado en primera | 0.43    |  0.3975   | 0.378     |
+|                   |   100   |   1000    | 2500    |   5000    |
+|-------------------|---------|-----------|-----------|-----------|
+| Primera ronda     | 0.762   |  0.74     | 0.737   | 0.7294    |
+| Segunda ronda     | 0.432   |  0.3975   | 0.379   | 0.378     |
+| Basado en primera | 0.43    |  0.3975   | 0.379   | 0.378     |
 
 1) Kernel: rbf, C: 10, Gamma: 1
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.792   | 0.743     | 0.7638    |
-| Segunda ronda     | 0.385   | 0.413     | 0.422     |
-| Basado en primera | 0.385   | 0.408     | 0.416     |
+|                   |   100   |   1000    | 2500    |   5000    |
+|-------------------|---------|-----------|-----------|-----------|
+| Primera ronda     | 0.792   | 0.743     | 0.76    | 0.7638    |
+| Segunda ronda     | 0.385   | 0.413     | 0.4192  | 0.422     |
+| Basado en primera | 0.385   | 0.408     | 0.4113  | 0.416     |
 
 2) Kernel: rbf, C: 10, Gamma: 0.000000001
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.81    | 0.76      | 0.726     |
-| Segunda ronda     | 0.415   | 0.41      | 0.384     |
-| Basado en primera | 0.415   | 0.41      | 0.384     |
+|                   |   100   |   1000    | 2500    |   5000    |
+|-------------------|---------|-----------|-----------|-----------|
+| Primera ronda     | 0.81    | 0.76      | 0.7442  | 0.726     |
+| Segunda ronda     | 0.415   | 0.41      | 0.3964  | 0.384     |
+| Basado en primera | 0.415   | 0.41      | 0.3969  | 0.384     |
 
 2) Kernel: rbf, C: 10, Gamma: auto
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     | 0.78    | 0.76      | 0.7388    |
-| Segunda ronda     | 0.447   | 0.41      | 0.387     |
-| Basado en primera | 0.457   | 0.407     | 0.389     |
+|                   |   100   |   1000    | 2500    |   5000    |
+|-------------------|---------|-----------|-----------|-----------|
+| Primera ronda     | 0.78    | 0.76      | 0.7481  | 0.7388    |
+| Segunda ronda     | 0.447   | 0.41      | 0.3953  | 0.387     |
+| Basado en primera | 0.457   | 0.407     | 0.3982  | 0.389     |
 
 Pruebas (sigmoid):
 

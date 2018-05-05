@@ -12,13 +12,13 @@ class Normalizer(object):
     def __init__(self, norm="l2"):
         super(Normalizer, self).__init__()
         self.featureNames = [
-            "Provincia", "Canton", "Total de la población", "Superficie",
-            "Densidad de la población", "Urbano/Rural", "Género", "Edad",
-            "Dependencia", "Alfabeta", "Escolaridad promedio",
-            "Escolaridad regular", "Trabaja", "Asegurado",
-            "Cant. casas individuales", "Ocupantes promedio", "Condicion",
-            "Hacinada", "Nacido en...", "Discapacitado", "Jefatura femenina",
-            "Jefatura compartida", "Voto ronda 1", "Voto ronda 2"
+            "Provincia", "Canton", "Totalpobla", "Superficie",
+            "Densidadpobln", "Urbano/Rural", "Genero", "Edad",
+            "Dependencia", "Alfabeta", "Escolaridadpromedio",
+            "Escolaridadregular", "Trabaja", "Asegurado",
+            "Cantcasas", "Ocupantespromedio", "Condicion",
+            "Hacinada", "Nacido", "Discapacitado", "Jefaturafemenina",
+            "Jefaturacompartida", "Votoronda1", "Votoronda2"
         ]
         self.converter = DictVectorizer(sparse=False)
         self.norm = norm
@@ -26,41 +26,13 @@ class Normalizer(object):
         self.convertedData = {}
         self.tensorColumns = []
 
-    def create_columns_tensor(self, samples):
-        tf.feature_column.categorical_column_with_hash_bucket(
-            'province', hash_bucket_size=100)
-        tf.feature_column.numeric_column('numeric')
-
-        featureNum = 0
-        for feature in samples[0]:
-
-            try:
-                feature = float(feature)
-            except ValueError:
-                # La propiedad es un string
-                pass
-
-            featureNum = 0
-            for feature in featureList:
-                try:
-                    feature = float(feature)
-                except ValueError:
-                    # La propiedad es un string
-                    pass
-                dictFeatures[self.featureNames[featureNum]] = feature
-                featureNum += 1
-
-            features.append(dictFeatures)
-
-        return features
-
-
     def prepare_data_tensor(self, samples, pct_test):
         data = self.separate_data(samples, pct_test)
 
         for key in data:
             if "Classes" not in key:
-                data[key] = self.create_columns_tensor(data[key])
+                data[key] = self.convert_to_dict_list(data[key])
+        return data
 
     '''
     Retorna los datos de las muestras pasadas por parametro en un diccionario
