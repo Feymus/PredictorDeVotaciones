@@ -40,17 +40,17 @@ L2: Este se ingresa por medio de la bandera --l2 y es un nivel de regularizació
 
 **Análisis de resultados**
 
-Para el análisis de este modelo se utilizarán muestras de tamaño de 100, 1000 y 5000. Para todas se guardará un dos por ciento de las muestras para realizar la prueba final, además se aplicarán la regularización l1 y l2 para cada grupo de muestras con una escala de 0.001, 0.00001 y 0.0000001.
+Para el análisis de este modelo se utilizarán muestras de tamaño de 100, 1000 y 5000. Para todas se guardará un dos por ciento de las muestras para realizar la prueba final, además se aplicarán la regularización l1 y l2 para cada grupo de muestras con una escala de 0.001, 0.00001 y 0.0000001, con un epoch(iteración sobre todos los datos de entrenamiento) de 800.
 
 Con regularización L1:
 
 1) Regularizacion: l1, scale: 0.001
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+|                   |   100   |   1000    |   5000      |
+|-------------------|---------|-----------|-------------|
+| Primera ronda     |  0.25   |   0.22    | 0.24        |
+| Segunda ronda     |  0.67   |   0.59    | 0.5955      |
+| Basado en primera |  0.56   |   0.58    | 0.5957      |
 
 2) Regularizacion: l1, scale: 0.00001
 
@@ -72,27 +72,27 @@ Con regularización L2::
 
 1) Regularizacion: l2, scale: 0.001
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+|                   |   100   |   1000    |   5000      |
+|-------------------|---------|-----------|-------------|
+| Primera ronda     |  0.25   |   0.22    | 0.24        |
+| Segunda ronda     |  0.67   |   0.59    | 0.5955      |
+| Basado en primera |  0.56   |   0.58    | 0.5957      |
 
 2) Regularizacion: l2, scale: 0.00001
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+|                   |   100   |   1000     |   5000     |
+|-------------------|---------|------------|------------|
+| Primera ronda     |  0.275  |   0.262    | 0.237      |
+| Segunda ronda     |  0.512  |   0.582    | 0.591      |
+| Basado en primera |  0.575  |   0.612    | 0.595      |
 
 3) Regularizacion: l2, scale: 0.0000001
 
-|                   |   100   |   1000    |   5000    |
-|-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+|                   |   100   |   1000     |   5000    |
+|-------------------|---------|------------|-----------|
+| Primera ronda     |  0.262  |   0.237    | 0.249      |
+| Segunda ronda     |  0.612  |   0.616    | 0.596      |
+| Basado en primera |  0.562  |   0.603    | 0.591      |
 
 ### Redes neuronales
 
@@ -106,6 +106,19 @@ unit_per_layer: Establece las unidades que se le quiere asignar a cada capa agre
 
 activation_func: Esta es la función de activación que se quiere utilizar en las capaz agregadas, este puede ser 'relu', 'sigmoid' o 'tanh'.
 
+**Análisis de resultados**
+
+Para el análisis de este modelo se utilizarán muestras de tamaño de 100, 1000 y 5000. Para todas se guardará un dos por ciento de las muestras para realizar la prueba final, además se aplicarán la regularización l1 y l2 para cada grupo de muestras con una escala de 0.001, 0.00001 y 0.0000001, con un epoch(iteración sobre todos los datos de entrenamiento) de 800.
+
+Con regularización L1:
+
+1) Regularizacion: l1, scale: 0.001
+
+|                   |   100   |   1000    |   5000      |
+|-------------------|---------|-----------|-------------|
+| Primera ronda     |  0.25   |   0.22    | 0.24        |
+| Segunda ronda     |  0.67   |   0.59    | 0.5955      |
+| Basado en primera |  0.56   |   0.58    | 0.5957      |
 
 ### Árboles de decisión
 ### KNN
