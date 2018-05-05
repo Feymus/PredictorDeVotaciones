@@ -10,7 +10,7 @@ from Normalizer import Normalizer
 from SVMClassifier import SVMClassifier
 from DecisionTree import DecisionTree
 from KDTree import Kd_Tree
-# from logisticRegression import logistic_regression_classifier
+from LogisticRegression import LogisticRegression
 # from neuralNetwork import neural_network_classifier
 from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
@@ -90,8 +90,7 @@ def make_csv(k, data, lenData, pctTest, predictions):
         file.close()
 
 
-'''
-def get_accuracy(classifier, toTrain, toTest):
+def get_accuracy2(classifier, toTrain, toTest):
 
     predictions = []
     classifier.train(toTrain)
@@ -108,7 +107,6 @@ def get_accuracy(classifier, toTrain, toTest):
         predictions.append(prediction[0])
         i += 1
 
-
     testingClasses = toTest["testingClasses"]
     right = 0
 
@@ -121,7 +119,6 @@ def get_accuracy(classifier, toTrain, toTest):
     accuracy = right / len(predictions)
 
     return (accuracy, predictions)
-'''
 
 
 def get_accuracy(classifier, toTrain, toTest):
@@ -178,7 +175,7 @@ def k_fold_cross_validation(k, classifier, data, lenData):
         toTrain["trainingFeatures"] = trainingFeatures
         toTrain["trainingClasses"] = trainingClasses
         toTrain["testingFeatures"] = testingFeatures
-        
+
         results.append(get_accuracy(classifier, toTrain, toTest))
 
         group += groupLen
@@ -245,9 +242,7 @@ def show_accuracy(model, predictions):
     print("----------------------------------------------")
     print("Tasa de error para: " + model)
     print()
-    print("K-fold Cross validation>")
-    print()
-    print("Holdout Cross validation>")
+    print("Cross validation>")
     print("Primera ronda: " + str(1-predictions[0][0]))
     print("Segunda ronda: " + str(1-predictions[1][0]))
     print("Segunda ronda (con primera incluida): " + str(1-predictions[2][0]))
@@ -259,11 +254,19 @@ def show_accuracy(model, predictions):
     print("----------------------------------------------")
 
 
-def svm_classification(k, lenData, pctTest, C=1, gamma=1, kernel="rbf"):
+def svm_classification(
+        k, lenData, pctTest, params, C=1, gamma=1, kernel="rbf"):
 
     clear_csv()
 
-    samples = generar_muestra_pais(lenData)
+    samples = []
+
+    print(params)
+    if (params[0] == "PAIS"):
+        samples = generar_muestra_pais(lenData)
+    else:
+        samples = generar_muestra_provincia(lenData, params[1])
+
     quantity_for_testing = int(lenData * pctTest)
 
     normalizer = Normalizer()
@@ -308,11 +311,16 @@ def svm_classification(k, lenData, pctTest, C=1, gamma=1, kernel="rbf"):
     make_csv(k, normalData, lenData, pctTest, predictions)
 
 
-def kd_tree_classification(k, lenData, pctTest, neightboards):
+def kd_tree_classification(k, lenData, pctTest, params, neightboards):
 
     clear_csv()
 
-    samples = generar_muestra_pais(lenData)
+    samples = []
+
+    if (params[0] == "PAIS"):
+        samples = generar_muestra_pais(lenData)
+    else:
+        samples = generar_muestra_provincia(lenData, params[1])
     quantity_for_testing = int(lenData * pctTest)
 
     normalizer = Normalizer()
@@ -356,12 +364,16 @@ def kd_tree_classification(k, lenData, pctTest, neightboards):
     make_csv(k, normalData, lenData, pctTest, predictions)
 
 
-def desicion_tree(k, lenData, pctTest, threshold):
+def desicion_tree(k, lenData, pctTest, params, threshold):
 
     clear_csv()
 
-    samples = generar_muestra_pais(lenData)
-    quantity_for_testing = int(lenData * pctTest)
+    samples = []
+
+    if (params[0] == "PAIS"):
+        samples = generar_muestra_pais(lenData)
+    else:
+        samples = generar_muestra_provincia(lenData, params[1])
 
     normalizer = Normalizer()
     data = normalizer.separate_data_2(samples, quantity_for_testing)
@@ -412,15 +424,10 @@ def lr_classification(k, lenData, pctTest, l_regulizer=1):
     quantity_for_testing = int(lenData * pctTest)
 
     normalizer = Normalizer()
-    data = normalizer.prepare_data(samples, quantity_for_testing)
+    data = normalizer.prepare_data_tensor(samples, quantity_for_testing)
 
-    classes = np.append(
-        data["trainingClassesFirst"],
-        data["testingClassesFirst"],
-        axis=0
-    )
-    lrClassifier = logistic_regression_classifier(l_regulizer, classes)
-    '''
+    lrClassifier = LogisticRegression(1, l_regulizer)
+
     firstRound = cross_validation(
         k,
         lrClassifier,
@@ -430,13 +437,9 @@ def lr_classification(k, lenData, pctTest, l_regulizer=1):
         "testingFeatures",
         "First"
     )
-    '''
-    classes = np.append(
-        data["trainingClassesSecond"],
-        data["testingClassesSecond"],
-        axis=0
-    )
-    lrClassifier = logistic_regression_classifier(l_regulizer, classes)
+
+    lrClassifier = LogisticRegression(2, l_regulizer)
+    print("Paso primero")
 
     secondRound = cross_validation(
         k,
@@ -447,7 +450,8 @@ def lr_classification(k, lenData, pctTest, l_regulizer=1):
         "testingFeatures",
         "Second"
     )
-    '''
+    print("Paso segundo")
+
     secondWithFirst = cross_validation(
         k,
         lrClassifier,
@@ -457,7 +461,8 @@ def lr_classification(k, lenData, pctTest, l_regulizer=1):
         "testingFeaturesFirstInclude",
         "Second"
     )
-    '''
+    print("Paso tercero")
+
     normalData = normalizer.get_normal_data()
     # predictions = [firstRound, secondRound, secondWithFirst]
     predictions = [secondRound]
@@ -466,14 +471,14 @@ def lr_classification(k, lenData, pctTest, l_regulizer=1):
 
 
 def main2():
-    lr_classification(10, 100, 0.2, l_regulizer=1)
+    lr_classification(2, 100, 0.2, l_regulizer=1)
 
 
 def pruebas():
     # svm_classification(1000, 0.2, C=10, gamma=0.00833333333, kernel="rbf")
-    lenData = 5000
+    lenData = 2500
     print(lenData)
-    print("kernel: ", "sigmoid", " C: ", 10, " G: ", 'auto')
+    print("kernel: ", "sigmoid", " C: ", 1, " G: ", 0.000000001)
     pctTest = 0.2
 
     # samples = generar_muestra_provincia(lenData, "SAN JOSE")
@@ -493,7 +498,7 @@ def pruebas():
         normalizer = Normalizer()
         data = normalizer.prepare_data(samples, quantity_for_testing)
         svm_classification(
-            10, lenData, pctTest, C=10, gamma='auto', kernel="sigmoid")
+            10, lenData, pctTest, C=1, gamma=0.000000001, kernel="sigmoid")
 
     time2 = time.time()
 
@@ -522,75 +527,135 @@ def pruebas():
 
 
 def main(argv):
-    # print(argv)
-    if(len(argv)<5):
+    print(argv)
+    if(len(argv)<6):
         print("\n     ***INSTRUCCIONES***\n")
         print("     main.py --poblacion<poblacion> --porcentaje-pruebas <porcentaje>  bandera\n")
         print("     BANDERAS:\n")
+        print("**   --provincia <provincia> | --pais")
         print("*    --regresion-logistica [--l1 o --l2] ")
         print("*    --red-neuronal --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ? ")
         print("*    --knn --k <numero de vecinos>")
         print("*    --arbol --umbral-poda <numero>")
         print("*    --svm --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>\n")
     else:
-
+        params = []
+        method = argv[4]
         lenData = int(argv[1])
         pctTest = float(argv[3])/100.0
+        if (method == "--pais"):
+            params.append("PAIS")
 
-        if(argv[4]=="--regresion-logistica"):
-            print("REGRESION LOGISTICA")
-            if(len(argv)==6):
-                print(argv[5])
+            if(argv[5]=="--regresion-logistica"):
+                print("REGRESION LOGISTICA")
+                if(len(argv)==7):
+                    print(argv[6])
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --l1 o --l2")
+
+            elif(argv[5]=="--red-neuronal"):
+                print("RED NEURONAL")
+                if(len(argv)==12):
+                    print(argv[6])
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ?")
+            elif(argv[5]=="--knn"):
+                print("KD-TREE")
+                if(len(argv)==8):
+                    print(argv[7])
+                    neightboards=int(argv[7])
+                    kd_tree_classification(2, lenData, pctTest, params, neightboards)
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --k <numero de vecinos>")
+            elif(argv[5]=="--arbol"):
+                print("ARBOL DE DECISION")
+                if(len(argv)==8):
+                    print(argv[7])
+                    threshold=float(argv[7])
+                    desicion_tree(2, lenData, pctTest, params, threshold)
+
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --umbral-poda <numero>")
+
+            elif(argv[5]=="--svm"):
+                print("SVM")
+                print(len(argv))
+                if(len(argv)==12):
+                    # print(argv[5:])
+                    k = argv[7]
+                    c = float(argv[9])
+                    try:
+                        g = float(argv[11])
+                    except ValueError:
+                        g = argv[11]
+                    svm_classification(10, lenData, pctTest, params, C=c, gamma=g, kernel=k)
+
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>")
             else:
-                print("ERROR: Parametros Incompletos")
-                print("Debe ingresar --l1 o --l2")
-
-        elif(argv[4]=="--red-neuronal"):
-            print("RED NEURONAL")
-            if(len(argv)==11):
-                print(argv[5])
-            else:
-                print("ERROR: Parametros Incompletos")
-                print("Debe ingresar --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ?")
-        elif(argv[4]=="--knn"):
-            print("KD-TREE")
-            if(len(argv)==7):
-                print(argv[6])
-                neightboards=int(argv[6])
-                kd_tree_classification(2, lenData, pctTest, neightboards)
-            else:
-                print("ERROR: Parametros Incompletos")
-                print("Debe ingresar --k <numero de vecinos>")
-        elif(argv[4]=="--arbol"):
-            print("ARBOL DE DECISION")
-            if(len(argv)==7):
-                print(argv[6])
-                threshold=float(argv[6])
-                desicion_tree(2, lenData, pctTest,threshold)
-
-
-            else:
-                print("ERROR: Parametros Incompletos")
-                print("Debe ingresar --umbral-poda <numero>")
-
-        elif(argv[4]=="--svm"):
-            print("SVM")
-            print(len(argv))
-            if(len(argv)==11):
-                # print(argv[5:])
-                k = argv[6]
-                c = float(argv[8])
-                try:
-                    g = float(argv[10])
-                except ValueError:
-                    g = argv[10]
-                svm_classification(10, lenData, pctTest, C=c, gamma=g, kernel=k)
-
-            else:
-                print("ERROR: Parametros Incompletos")
-                print("Debe ingresar --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>")
+                 print("ERROR: Bandera inexistente")
         else:
-             print("ERROR: Bandera inexistente")
+            params.append("PROVINCIA")
+            params.append(argv[5])
+
+            if(argv[6]=="--regresion-logistica"):
+                print("REGRESION LOGISTICA")
+                if(len(argv)==8):
+                    print(argv[7])
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --l1 o --l2")
+
+            elif(argv[6]=="--red-neuronal"):
+                print("RED NEURONAL")
+                if(len(argv)==13):
+                    print(argv[7])
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ?")
+            elif(argv[6]=="--knn"):
+                print("KD-TREE")
+                if(len(argv)==9):
+                    print(argv[8])
+                    neightboards=int(argv[8])
+                    kd_tree_classification(2, lenData, pctTest, params, neightboards)
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --k <numero de vecinos>")
+            elif(argv[6]=="--arbol"):
+                print("ARBOL DE DECISION")
+                if(len(argv)==9):
+                    print(argv[8])
+                    threshold=float(argv[8])
+                    desicion_tree(2, lenData, pctTest, params, threshold)
+
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --umbral-poda <numero>")
+
+            elif(argv[6]=="--svm"):
+                print("SVM")
+                print(len(argv))
+                if(len(argv)==13):
+                    # print(argv[5:])
+                    k = argv[8]
+                    c = float(argv[10])
+                    try:
+                        g = float(argv[12])
+                    except ValueError:
+                        g = argv[12]
+                    svm_classification(10, lenData, pctTest, params, C=c, gamma=g, kernel=k)
+
+                else:
+                    print("ERROR: Parametros Incompletos")
+                    print("Debe ingresar --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>")
+            else:
+                 print("ERROR: Bandera inexistente")
 
 
 
@@ -600,3 +665,4 @@ def main(argv):
 if __name__ == '__main__':
     main(sys.argv[1:])
     # main2()
+    # pruebas()
