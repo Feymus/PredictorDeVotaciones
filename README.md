@@ -270,11 +270,7 @@ Gamma: Define cuánta influencia tiene un único ejemplo de entrenamiento. Cuant
 
 **Análisis de resultados**
 
-<<<<<<< Updated upstream
 Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000, 2500 (solo rbf) y 5000, para todas se guardará un dos por ciento de las muestras para realizar la prueba final. Además, en SVM se probarán los kernel "rbf" y "sigmoid", para los valores de C se probarán valores 1 y 10, para gamma se probarán valores exponenciales de 1 a 0.000000001 y el valor auto (que se calcula segun la cantidad de propiedades).
-=======
-Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000 y 5000, para todas se guardará un veinte por ciento de las muestras para realizar la prueba final. Además, en SVM se probarán los kernel "rbf" y "sigmoid", para los valores de C se probarán valores 1 y 10, para gamma se probarán valores exponenciales de 1 a 0.000000001 y el valor auto (que se calcula segun la cantidad de propiedades).
->>>>>>> Stashed changes
 
 Cada prueba muestra el error de entrenamiento (ER) promedio del modelo luego de 30 corridas.
 
@@ -283,12 +279,14 @@ Pruebas (rbf):
 1) Kernel: rbf, C: 1, Gamma: 1
 
 |                   |   100   |   1000    | 2500    |   5000    |
-|-------------------|---------|-----------|-----------|-----------|
+|-------------------|---------|-----------|---------|-----------|
 | Primera ronda     |  0.772  |   0.77    | 0.761   | 0.73      |
 | Segunda ronda     |  0.444  |   0.41    | 0.42    | 0.41      |
 | Basado en primera |  0.445  |   0.39    | 0.41    | 0.40      |
 
 2) Kernel: rbf, C: 1, Gamma: 0.000000001
+
+Un gamma bajo, un C bajo y rbf mejoraron ligeramente las predicciones de ronda 1, pero con las demás no se vio una mejora significativa.
 
 |                   |   100   |   1000    | 2500      |   5000    |
 |-------------------|---------|-----------|-----------|-----------|
@@ -298,6 +296,8 @@ Pruebas (rbf):
 
 3) Kernel: rbf, C: 1, Gamma: auto
 
+Al usar un gamma calculado con un algoritmo, un C bajo y rbf se noto que la predicción mejoraba con todas las rondas, lastimosamente los valores de segunda ronda y segunda ronda basado en primera no variaron entre sí por lo que no se ve como los parametros optimos.
+
 |                   |   100   |   1000    | 2500    |   5000    |
 |-------------------|---------|-----------|-----------|-----------|
 | Primera ronda     | 0.762   |  0.74     | 0.737   | 0.7294    |
@@ -305,6 +305,8 @@ Pruebas (rbf):
 | Basado en primera | 0.43    |  0.3975   | 0.379   | 0.378     |
 
 4) Kernel: rbf, C: 10, Gamma: 1
+
+Un gamma alto y un C alto con rbf no es una buena combinación para los datos de segunda ronda, más que todo porque un gamma alto con muchas propiedades hace que las predicciones no sean tan buenas, por otra parte nos permitio ver diferentes resultados en ronda 2 y ronda 2 basado en primera, ya que normalmente estas terminan predicciendo lo mismo.
 
 |                   |   100   |   1000    | 2500    |   5000    |
 |-------------------|---------|-----------|-----------|-----------|
@@ -314,6 +316,8 @@ Pruebas (rbf):
 
 5) Kernel: rbf, C: 10, Gamma: 0.000000001
 
+Utilizar un C alto y un gamma lo suficientemente bajo con rbf mejora en gran cantidad con muchos valores de predicción como lo fue ronda 1, en cambio con ronda 2 o ronda 2 basado en primera no se nota una muy buena mejora en comparación a usar un algoritmo para calcular gamma.
+
 |                   |   100   |   1000    | 2500    |   5000    |
 |-------------------|---------|-----------|-----------|-----------|
 | Primera ronda     | 0.81    | 0.76      | 0.7442  | 0.726     |
@@ -322,11 +326,15 @@ Pruebas (rbf):
 
 6) Kernel: rbf, C: 10, Gamma: auto
 
+La utilización de un C alto y un algoritmo que saque Gamma segun la cantidad de propiedades demostro que el predictor mejorara entre más muestras reciba, como se puede notar la diferencia entre hacer la prediccion con 100 muestras y hacerlo con 5000, el error disminuye en más de un 5%. Tambien en estos datos influye el uso del kernel rbf pues con sigmoid no se nota esta mejora, como se vera más adelante.
+
 |                   |   100   |   1000    | 2500    |   5000    |
 |-------------------|---------|-----------|-----------|-----------|
 | Primera ronda     | 0.78    | 0.76      | 0.7481  | 0.7388    |
 | Segunda ronda     | 0.447   | 0.41      | 0.3953  | 0.387     |
 | Basado en primera | 0.457   | 0.407     | 0.3982  | 0.389     |
+
+Con los anteriores parametros se noto que el clasificador mejoraba, pues el error de entrenamiento iba dismiuyendo conforme de usaban más muestras.
 
 Pruebas (sigmoid):
 
@@ -385,7 +393,7 @@ Pruebas (sigmoid):
 Para el funcionamiento de este programa se necesita instalar los siguientes módulos de python los cuales se instalan desde la terminal del sistema operativo:
 
 1. Tensorflow
-	
+
 	- Si se desea instalar en linux, seguir los siguientes pasos e ingresar los comandos en la terminal.
 
 		1. Instalar pip o el ambiente virtual.
@@ -406,7 +414,7 @@ Para el funcionamiento de este programa se necesita instalar los siguientes mód
 
 					Al hacer esto, la raíz de la terminal debería de cambiar a:
 
-					(tensorflow)$ 
+					(tensorflow)$
 
 		4. Nos aseguramos de que pip esté instalado.
 
@@ -432,7 +440,7 @@ Para el funcionamiento de este programa se necesita instalar los siguientes mód
 	                sudo pip install keras
 
 	- Si se está utilizando un ambiente virtual, escribir en la terminal:
-				
+
 					pip install keras
 
 
