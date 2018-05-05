@@ -1,214 +1,176 @@
+from sklearn.feature_extraction import DictVectorizer
+import tensorflow as tf
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from Normalizer import Normalizer
+import copy
 from tec.ic.ia.pc1.g06 import (
     generar_muestra_pais,
     generar_muestra_provincia
 )
-from Normalizer import Normalizer
-import pandas as pd
-import copy
-import logging
-logging.getLogger('tensorflow').disabled = True
-
-import tensorflow as tf
 
 
-political_party = ['ACCESIBILIDAD SIN EXCLUSION', 'ACCION CIUDADANA',
-                   'ALIANZA DEMOCRATA CRISTIANA', 'DE LOS TRABAJADORES',
-                   'FRENTE AMPLIO', 'INTEGRACION NACIONAL',
-                   'LIBERACION NACIONAL', 'MOVIMIENTO LIBERTARIO',
-                   'NUEVA GENERACION', 'RENOVACION COSTARRICENSE',
-                   'REPUBLICANO SOCIAL CRISTIANO', 'RESTAURACION NACIONAL',
-                   'UNIDAD SOCIAL CRISTIANA', 'NULO', 'BLANCO']
+'''Lista con los Partidos Políticos'''
+political_party = ['ACCESIBILIDAD SIN EXCLUSION','ACCION CIUDADANA',
+                   'ALIANZA DEMOCRATA CRISTIANA','DE LOS TRABAJADORES',
+                   'FRENTE AMPLIO','INTEGRACION NACIONAL','LIBERACION NACIONAL',
+                   'MOVIMIENTO LIBERTARIO','NUEVA GENERACION','RENOVACION COSTARRICENSE',
+                   'REPUBLICANO SOCIAL CRISTIANO','RESTAURACION NACIONAL',
+                   'UNIDAD SOCIAL CRISTIANA','NULO','BLANCO']
 
-political_party2 = ['ACCION CIUDADANA', 'RESTAURACION NACIONAL',
-                    'NULO', 'BLANCO']
+class logistic_regression_classifier(object):
 
-strings = [
-    "Provincia", "Canton", "Urbano/Rural", "Genero", "Edad",
-    "Dependencia", "Alfabeta", "Escolaridadregular", "Trabaja", "Asegurado",
-    "Condicion", "Hacinada", "Nacido", "Discapacitado", "Jefaturafemenina",
-    "Jefaturacompartida", "Votoronda1", "Votoronda2"
-]
+    '''Clasificador de Modelos de Regresion Logistica'''
+  
 
+    def __init__(self, l_regulizer, classes):
+        self.l_regulizer = l_regulizer
+        self.X = None
+        self.y = None
+        self.W = None
+        self.b = None
+        self.y_ = None
+        self.oneHot = OneHotEncoder()
+        allClasses = copy.copy(classes)
+        allClasses = self.replace_political_party(allClasses).reshape(-1, 1)
+        self.oneHot.fit(allClasses)
 
-class LogisticRegression(object):
+    def __init__(self):
+        pass
 
-    def __init__(self, round, norm):
-        super(LogisticRegression, self).__init__()
-        self.round = round
-        if (round == 1):
-            self.n = 15
-        else:
-            self.n = 4
-        if (norm == 1):
-            self.l1 = 1
-            self.l2 = 0
-        else:
-            self.l1 = 0
-            self.l2 = 1
+    """
+    Cambia los partidos politicos por un numero, el cual va a ser el indice que tienen en la
+    lista global political_party
+    Entradas: Lista con los nombres del partido
+    Salida: Lista con los partidos cambiados a numeros
+    """
+    def replace_political_party(self, party):
+        for i in range(len(party)):
+            party[i] = political_party.index(party[i])
+        return party
 
-    def classify(self, sample):
-        testing = copy.copy(sample[0])
+    def toparty(self, lista):
+        temp = []
+        for i in range(len(lista)):
+            temp+=[political_party[lista[i].index(1)]]
+        return temp
 
-        for key in testing:
-            testing[key] = [testing[key]]
+    def train(self, data, scale = 0.0001, epochs = 800):
+        learning_rate = 0.05
+        print("Learning rate: ",learning_rate)
+        print("Scale: ", scale,"\n")
+        print("Epochs: ", epochs)
+        display_step = 1
 
-        prediction = self.classifier.predict(
-            input_fn=lambda: self.eval_input_fn(
-                testing,
-                labels=None
-            )
-        )
+        train_x = data["trainingFeatures"]
+        train_y = data["trainingClasses"]
+        test_x = data["testingFeatures"]
+        test_y = data["testingClasses"]
 
-        for pred_dict in zip(prediction):
-            predictedIndx = pred_dict[0]['class_ids'][0]
+        train_y = self.replace_political_party(train_y).reshape(-1,1)
+        train_y = self.oneHot.transform(train_y).toarray()
 
-        if (self.round == 1):
-            return political_party[predictedIndx]
-        else:
-            return political_party2[predictedIndx]
+        test_y = self.replace_political_party(test_y).reshape(-1,1)
+        test_y = self.oneHot.transform(test_y).toarray()
 
-    def train(self, data):
+        shape_x = train_x.shape[1]
+        shape_y = train_y.shape[1]
+        
+        with tf.name_scope("Declaring_placeholder"):
+            self.X = tf.placeholder(tf.float32, shape = [None, shape_x])
+            self.y = tf.placeholder(tf.float32, shape = [None, shape_y])
 
-        train_x, train_y = self.load_data(data)
+        #Weights
+        with tf.name_scope("Declaring_variables"):
+            self.W = tf.Variable(tf.zeros([shape_x, shape_y]))
+            self.b = tf.Variable(tf.zeros([shape_y]))
 
-        my_feature_columns = []
-        for key in train_x.keys():
-            if key not in strings:
-                my_feature_columns.append(
-                    tf.feature_column.numeric_column(key=key)
-                )
-            else:
-                my_feature_columns.append(
-                    tf.feature_column.categorical_column_with_hash_bucket(
-                        key=key, hash_bucket_size=100
-                    )
-                )
+        with tf.name_scope("Prediction_functions"):
+            self.y_ = tf.nn.softmax(tf.add(tf.matmul(self.X, self.W), self.b))
 
-        self.classifier = tf.estimator.LinearClassifier(
-            feature_columns=my_feature_columns,
-            n_classes=self.n,
-            optimizer=tf.train.FtrlOptimizer(
-                learning_rate=0.1,
-                l1_regularization_strength=self.l1,
-                l2_regularization_strength=self.l2
-            )
-        )
+        with tf.name_scope("calculating_cost"):
+            # calculando costo
+            cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y,
+                                                                             logits=self.y_))
 
-        # Train the Model.
-        self.classifier.train(
-            input_fn=lambda: self.train_input_fn(
-                train_x, train_y
-            ),
-            steps=1
-        )
+        with tf.name_scope("regulizer"):
+            if (self.l_regulizer == 1):
+                weights = tf.trainable_variables() #all variables of the graph
+                l1_regularizer = tf.contrib.layers.l1_regularizer(scale = scale, scope=None)
+                regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer,
+                                                                                weights)
+                regularized_loss = cost + regularization_penalty
+                print("Using L1 Regulizer")
+                
+            if (self.l_regulizer == 2):
+                weights = tf.trainable_variables() #all variables of the graph
+                l2_regularizer = tf.contrib.layers.l2_regularizer(scale = scale, scope=None)
+                regularization_penalty = tf.contrib.layers.apply_regularization(l2_regularizer,
+                                                                                weights)
+                regularized_loss = cost + regularization_penalty
+                print("Using L2 Regulizer")
+                
+        with tf.name_scope("declaring_gradient_descent"):
+            # optimizer
+            # usamos gradient descent para optimizar
+            optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(regularized_loss)
 
-    def load_data(self, data):
-
-        if (type(data["trainingFeatures"]) != list):
-            train_x = pd.DataFrame(copy.copy(data["trainingFeatures"]).tolist())
-        else:
-            train_x = pd.DataFrame(copy.copy(data["trainingFeatures"]))
-        y = copy.copy(data["trainingClasses"])
-
-        index = []
-        for i in y:
-            if (self.round == 1):
-                index.append(political_party.index(i))
-            else:
-                index.append(political_party2.index(i))
-        train_y = pd.DataFrame(index)
-
-        return (train_x, train_y)
-
-    def train_input_fn(self, features, labels):
-        batch_size = 10
-        # Convert the inputs to a Dataset.
-        dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
-
-        # Shuffle, repeat, and batch the examples.
-        dataset = dataset.shuffle(1).repeat().batch(batch_size)
-
-        # Return the dataset.
-        return dataset
-
-    def eval_input_fn(self, features, labels):
-        batch_size = 100
-        features = dict(features)
-        if labels is None:
-            # No labels, use only features.
-            inputs = features
-        else:
-            inputs = (features, labels)
-        # Convert the inputs to a Dataset.
-        dataset = tf.data.Dataset.from_tensor_slices(inputs)
-
-        # Batch the examples
-        assert batch_size is not None, "batch_size must not be None"
-        dataset = dataset.batch(batch_size)
-
-        # Return the dataset.
-        return dataset
+        with tf.name_scope("starting_tensorflow_session"):
+            with tf.Session() as sess:
+                # inicializa las variables
+                sess.run(tf.global_variables_initializer())
+                for epoch in range(epochs):
+                    cost_in_each_epoch = 0
+                    # empieza el entrenamiento
+                    _, c = sess.run([optimizer, cost], feed_dict={self.X: train_x,
+                                                                  self.y: train_y})
+                    cost_in_each_epoch += c
+    ##                # you can uncomment next two lines of code for printing cost when training
+    ##                if (epoch+1) % display_step == 0:
+    ##                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
 
 
+    def classify(self,data):
+        test_x = data["testingFeatures"]
+        test_y = data["testingClasses"]
+        
+        test_y = test_y.reshape(-1,1)
+        test_y = self.oneHot.transform(test_y).toarray()
 
-def load_data():
+        with tf.name_scope("starting_tensorflow_session"):
+            with tf.Session() as sess:
+                # inicializa las variables
+                sess.run(tf.global_variables_initializer())
+                for epoch in range(epochs):
+                    cost_in_each_epoch = 0
+                    # empieza el entrenamiento
+                    _, c = sess.run([optimizer, cost], feed_dict={self.X: train_x,
+                                                                  self.y: train_y})
+                    cost_in_each_epoch += c
+    ##                # you can uncomment next two lines of code for printing cost when training
+    ##                if (epoch+1) % display_step == 0:
+    ##                    print("Epoch: {}".format(epoch + 1), "cost={}".format(cost_in_each_epoch))
 
-    lenData = 100
-    pctTest = 0.2
-    samples = generar_muestra_pais(lenData)
-    quantity_for_testing = int(lenData * pctTest)
-
-    normalizer = Normalizer()
-    data = normalizer.prepare_data_tensor(samples, quantity_for_testing)
-
-    train_x = pd.DataFrame(data["trainingFeatures"])
-    print(data["trainingFeatures"])
-    #train_y = pd.DataFrame(data["trainingClassesFirst"])
-    test_x = data["testingFeatures"]
-    #test_y = pd.DataFrame(data["testingClassesFirst"])
-
-    y = data["trainingClassesSecond"]
-    index = []
-    for i in y:
-        index.append(political_party2.index(i))
-
-    train_y = pd.DataFrame(index)
-
-    y = data["testingClassesSecond"]
-    index = []
-    for i in y:
-        index.append(political_party2.index(i))
-
-    test_y = data["testingClassesSecond"]
-
-    return (train_x, train_y), (test_x, test_y)
+                print("Accuracy Training:", accuracy.eval({X: train_x, y: train_y}))
+##        sess = tf.Session()
+##        with sess.as_default():
+##            return self.toparty(self.y.eval({self.X: test_x, self.y: test_y}).tolist())
+##            
 
 
-def train_input_fn(features, labels, batch_size):
-    # Convert the inputs to a Dataset.
-    dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
-
-    # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(10).repeat().batch(batch_size)
-
-    # Return the dataset.
-    return dataset
-
-
-def eval_input_fn(features, labels, batch_size):
-    features=dict(features)
-    if labels is None:
-        # No labels, use only features.
-        inputs = features
-    else:
-        inputs = (features, labels)
-    # Convert the inputs to a Dataset.
-    dataset = tf.data.Dataset.from_tensor_slices(inputs)
-
-
-    # Batch the examples
-    assert batch_size is not None, "batch_size must not be None"
-    dataset = dataset.batch(batch_size)
-
-    # Return the dataset.
-    return dataset
+samples = generar_muestra_pais(100)
+quantity_for_testing = int(100*0.2)
+normalizer = Normalizer()
+data = normalizer.prepare_data(samples, quantity_for_testing)
+classes = np.append(
+        data["trainingClassesFirst"],
+        data["testingClassesFirst"],
+        axis=0
+    )
+sample = { "trainingFeatures": data["trainingFeatures"], "trainingClasses": data["trainingClassesFirst"],"testingFeatures": data["testingFeatures"], "testingClasses": data["testingClassesFirst"]}
+sample2 = { "testingFeatures": data["testingFeatures"], "testingClasses": data["testingClassesFirst"]}
+print(sample2["testingClasses"])
+prueba = logistic_regression_classifier(1,classes)
+prueba.train(sample)
+print(prueba.classify(sample2))
