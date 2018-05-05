@@ -56,17 +56,17 @@ Con regularización L1:
 
 |                   |   100   |   1000    |   5000    |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+| Primera ronda     |  0.23   |   0.25    | 0.25      |
+| Segunda ronda     |  0.71   |   0.57    | 0.58      |
+| Basado en primera |  0.67   |   0.58    | 0.59      |
 
 3) Regularizacion: l1, scale: 0.0000001
 
 |                   |   100   |   1000    |   5000    |
 |-------------------|---------|-----------|-----------|
-| Primera ronda     |  0.772  |   0.77    | 0.73      |
-| Segunda ronda     |  0.444  |   0.41    | 0.41      |
-| Basado en primera |  0.445  |   0.39    | 0.40      |
+| Primera ronda     |  0.225  |   0.25    | 0.23      |
+| Segunda ronda     |  0.712  |   0.58    | 0.60      |
+| Basado en primera |  0.575  |   0.57    | 0.58      |
 
 Con regularización L2::
 
@@ -108,7 +108,7 @@ activation_func: Esta es la función de activación que se quiere utilizar en la
 
 **Análisis de resultados**
 
-Para el análisis del modelo de Red Neuronal se utilizarán muestras de tamaño 100, 1000 y 5000. Esto guardará un veinte por ciento de las muestras generadas para realizar la prueba final. A cada muestra se le agregará una cantidad de capas de 5, 10 y 20, además de las unidades para cada capa con números aleatorios y una función de activación utilizando 'tanh', 'sigmoid' y 'relu'.
+Para el análisis del modelo de Red Neuronal se utilizarán muestras de tamaño 100, 1000 y 5000. Esto guardará un veinte por ciento de las muestras generadas para realizar la prueba final. A cada muestra se le agregará una cantidad de capas de 5, 10 y 20, además de las unidades para cada capa con números aleatorios y una función de activación utilizando 'sigmoid'.
 
 Utilizando función de activación Sigmoid:
 
@@ -116,25 +116,27 @@ Utilizando función de activación Sigmoid:
 
 |                   |   100   |   1000    |   5000      |
 |-------------------|---------|-----------|-------------|
-| Primera ronda     |  0.15   |   0.22    | 0.24        |
-| Segunda ronda     |  0.50   |   0.59    | 0.5955      |
-| Basado en primera |  0.60   |   0.58    | 0.5957      |
+| Primera ronda     |  0.15   |   0.23    | 0.25        |
+| Segunda ronda     |  0.50   |   0.56    | 0.59        |
+| Basado en primera |  0.60   |   0.59    | 0.58        |
 
 1) layers: 10, unit_per_layer: [10,15,20,25,27,30,32,35,45,50], activation_func: 'sigmoid'
 
 |                   |   100   |   1000    |   5000      |
 |-------------------|---------|-----------|-------------|
-| Primera ronda     |  0.20   |   0.22    | 0.24        |
-| Segunda ronda     |  0.45   |   0.59    | 0.5955      |
-| Basado en primera |  0.55   |   0.58    | 0.5957      |
+| Primera ronda     |  0.20   |   0.23    | 0.23        |
+| Segunda ronda     |  0.45   |   0.59    | 0.59        |
+| Basado en primera |  0.55   |   0.58    | 0.62        |
 
 1) layers: 20, unit_per_layer: [5,8,10,10,12,15,20,25,27,30,32,35,45,50,52,55,62,68,90,100], activation_func: 'sigmoid'
 
 |                   |   100   |   1000    |   5000      |
 |-------------------|---------|-----------|-------------|
-| Primera ronda     |  0.35   |   0.22    | 0.24        |
-| Segunda ronda     |  0.50   |   0.59    | 0.5955      |
-| Basado en primera |  0.56   |   0.58    | 0.5957      |
+| Primera ronda     |  0.22   |   0.25    | 0.23        |
+| Segunda ronda     |  0.71   |   0.58    | 0.60        |
+| Basado en primera |  0.57   |   0.57    | 0.58        |
+
+Se puede observar que la cantidad de capas puede afectar el "accuracy" de la clasificación por el modelo de redes neuronales.
 
 ### Árboles de decisión
 
@@ -215,44 +217,44 @@ numero: Indica el número de vecinos a considerar para el modelo de "nearest nei
 
 **Análisis de resultados**
 
-Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000 y 5000. Se guardará un veinte por ciento de las muestras para la realización de la prueba final. Además de utilizará una cantidad de 10, 20, 50 y 100 vecinos más cercanos. Este retorna el error de entrenamiento
+Para el análisis del modelo se pretende utilizar muestras de tamaños 100, 1000. Se guardará un veinte por ciento de las muestras para la realización de la prueba final. Además de utilizará una cantidad de 10, 20, 50 y 100 vecinos más cercanos. Este retorna el error de entrenamiento
 
 10 vecinos más cercanos
 
 1) Cross Validation.
 
-|                   |   100   |   1000    |   5000     |
-|-------------------|---------|-----------|------------|
-| Primera ronda     |  0.9    |   0.81    |            |
-| Segunda ronda     |  0.3    |   0.47    |            |
-| Basado en primera |  0.3    |   0.34    |            |
+|                   |   100   |   1000    |   
+|-------------------|---------|-----------|
+| Primera ronda     |  0.9    |   0.81    |            
+| Segunda ronda     |  0.3    |   0.47    |            
+| Basado en primera |  0.3    |   0.34    |            
 
 2) Pruebas
 
-|                   |   100   |   1000    |   5000     |
-|-------------------|---------|-----------|------------|
-| Primera ronda     |  0.75   |   0.80    |            |
-| Segunda ronda     |  0.55   |   0.45    |            |
-| Basado en primera |  0.6    |   0.44    |            |
+|                   |   100   |   1000    |   
+|-------------------|---------|-----------|
+| Primera ronda     |  0.75   |   0.80    |           
+| Segunda ronda     |  0.55   |   0.45    |            
+| Basado en primera |  0.6    |   0.44    |            
 
 
 20 vecinos más cercanos
 
 1) Cross Validation.
 
-|                   |   100    |   1000    |   5000     |
-|-------------------|----------|-----------|------------|
-| Primera ronda     |  0.86    |   0.80    |            |
-| Segunda ronda     |  0.46    |   0.44    |            |
-| Basado en primera |  0.46    |   0.44    |            |
+|                   |   100    |   1000    |     
+|-------------------|----------|-----------|
+| Primera ronda     |  0.86    |   0.80    |            
+| Segunda ronda     |  0.46    |   0.44    |            
+| Basado en primera |  0.46    |   0.44    |            
 
 2) Pruebas
 
-|                   |   100   |   1000    |   5000     |
-|-------------------|---------|-----------|------------|
-| Primera ronda     |  0.85   |   0.86    |            |
-| Segunda ronda     |  0.35   |   0.52    |            |
-| Basado en primera |  0.44   |   0.50    |            |
+|                   |   100   |   1000    |        
+|-------------------|---------|-----------|
+| Primera ronda     |  0.85   |   0.86    |            
+| Segunda ronda     |  0.35   |   0.52    |            
+| Basado en primera |  0.44   |   0.50    |            
 
 ### SVM
 
