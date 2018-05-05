@@ -25,6 +25,7 @@ class Kd_Tree():
         self.r = None
         self.neightboards = neightboards
         self.results = None
+
     '''
     Entrena el modelo.
     Entrada: Conjunto de muestras.
@@ -39,6 +40,7 @@ class Kd_Tree():
 
         self.r = samples2
         self.tree = kd_trees(list(self.r), 0)
+
     '''
     Clasifica una muestra segun el modelo.
     Entrada: Muestra a evaluar.
@@ -66,24 +68,23 @@ class Kd_Tree():
 
 class BinaryTree():
 
-   '''
-   Metodo por default que inicializa la clase.
-   Entrada: NA.
-   Salida: NA.
-   '''
+    '''
+    Metodo por default que inicializa la clase.
+    Entrada: NA.
+    Salida: NA.
+    '''
 
-   def __init__(self):
+    def __init__(self):
         self.left = None
         self.right = None
         self.dimension = None
-
 
     '''
     Obtiene el hijo izquierdo del arbol.
     Entrada: NA
     Salida: Arbol del hijo izquierdo.
     '''
-    
+
     def getLeftChild(self):
         return self.left
     '''
@@ -125,7 +126,7 @@ class BinaryTree():
     '''
 
     def insertRight(self, newNode):
-        if self.right == None:
+        if self.right is None:
             self.right = BinaryTree(newNode)
         else:
             tree = BinaryTree(newNode)
@@ -138,14 +139,12 @@ class BinaryTree():
     '''
 
     def insertLeft(self, newNode):
-        if self.left == None:
+        if self.left is None:
             self.left = BinaryTree(newNode)
         else:
             tree = BinaryTree(newNode)
             tree.left = self.left
             self.left = tree
-
-
 
 
 '''
@@ -156,10 +155,11 @@ Salida: NA
 
 
 def printTree(tree):
-    if tree != None:
+    if tree is not None:
         printTree(tree.getLeftChild())
         print(tree.getNodeValue())
         printTree(tree.getRightChild())
+
 
 '''
 Crea el modelo kd_tree.
@@ -183,6 +183,8 @@ def kd_trees(list_points, depth):
         node.left = kd_trees(list_points[0:median], depth + 1)
         node.right = kd_trees(list_points[median + 1:], depth + 1)
         return node
+
+
 '''
 Calcula distancia entre puntos.
 Entrada: Punto 1 y Punto 2.
@@ -198,6 +200,7 @@ def distance(point1, point2):
         values += [d_temp * d_temp]
 
     return sqrt(sum(values))
+
 
 '''
 Obtiene el punto mas cercano.
@@ -218,6 +221,7 @@ def closest_point(all_points, new_point):
             best_point = current_point
 
     return best_point
+
 
 '''
 Obtiene el punto mas cercano del arbol.
@@ -247,6 +251,7 @@ def kdtree_naive_closest_point(root, point, depth=0, best=None):
 
     return kdtree_naive_closest_point(next_branch, point, depth + 1, next_best)
 
+
 '''
 Compara entre dos puntos cual es el mas cercano a un punto especifico.
 Entrada: Punto base de comparacion, punto candidato 1 y punto candidato 2.
@@ -269,7 +274,10 @@ def closer_distance(pivot, p1, p2):
     else:
         return p2
 
+
 kn_final = []
+
+
 '''
 Obtiene el punto mas cercano.
 Entrada: Arbol, punto a evaluas, profundidad, conjunto de puntos.
@@ -313,6 +321,7 @@ def kdtree_closest_point(root, point, depth=0, kn=[]):
 
     return best
 
+
 '''
 Obtiene determinado numero de puntos mas cercanos
 Entrada: Punto y numero de puntos cercanos.
@@ -340,6 +349,7 @@ def top_points(point, k):
                 distance_temp_list += [distance_temp]
 
     return points
+
 
 '''
 Obtiene el valor que mas aparece de un conjunto de puntos.
