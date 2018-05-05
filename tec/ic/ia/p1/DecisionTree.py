@@ -21,13 +21,13 @@ class DecisionTree():
 
     '''
     Método que trae por default python que inicializa la clase.
-
     '''
 
     def __init__(self, threshold):
         self.tree = None  # Guarda el Árbol Generado
         self.attr = None  # Contiene la lista de atributos evaluados
         self.threshold = threshold
+
     '''
     Entrena el modelo con los conjuntos de datos dados.
     Entrada: una lista con las muestras de entrenamiento.
@@ -36,28 +36,26 @@ class DecisionTree():
 
     def train(self, samples):
         print(samples)
-     
-        array_samples=samples["trainingFeatures"].tolist()
-        prunning_tests=samples["testingFeatures"].tolist()
-      
+
+        array_samples = samples["trainingFeatures"].tolist()
+        prunning_tests = samples["testingFeatures"].tolist()
+
         data = []  # Contiene los posibles resultados
         for i in array_samples:
             data += [i[len(i) - 1]]
             data = list(set(data))
-  
+
         attr = []  # Contiene los atributos evaluados
         for i in range(len(array_samples[0]) - 1):
             attr += ["attr" + str(i)]
 
         self.attr = attr
-       
+
         self.tree = desition_tree(array_samples, attr, data)
         for i in prunning_tests:
-            result=self.tree.test(i,attr,i[len(i)-1])
-
-
-
+            result = self.tree.test(i, attr, i[len(i) - 1])
         self.tree.pruning_chi(self.threshold, attr, data)
+
     '''
     Predice el valor según una muestra.
     Entrada: una lista con los atributos y el valor esperado.
@@ -65,20 +63,23 @@ class DecisionTree():
     '''
 
     def classify(self, test):
-        #test_sample=test
-        test_sample=test[0].tolist()
+        # test_sample=test
+        test_sample = test[0].tolist()
         print(test_sample)
-        #print(self.tree.test(test_sample, self.attr, test_sample[len(test_sample) - 1]))
+        # print(self.tree.test(test_sample, self.attr,
+        # test_sample[len(test_sample) - 1]))
         return self.tree.test(test_sample, self.attr, test_sample[len(test_sample) - 1])
 
 
 class Tree(object):
+
     '''
     Método que trae por default python que inicializa la clase.
     Entrada: el nombre de la raíz.
     Salida: NA
 
     '''
+
     def __init__(self, name='root', children=None):
 
         self.name = name
@@ -89,37 +90,91 @@ class Tree(object):
         if children is not None:
             for child in children:
                 self.add_child(child)
+    '''
+    Método de python que muestra como se va a representar la clase a la hora de imprimir.
+    Entrada: NA
+    Salida: String con Nombre
+    '''
 
     def __repr__(self):
         return str(self.name)
+    '''
+    Método de python que muestra como se va a representar la clase a la hora de imprimir.
+    Entrada: NA.
+    Salida: String con Nombre y Atributos.
+    '''
 
     def __str__(self):
         return str(self.__class__) + ": \n" + str(self.__dict__)
 
+    '''
+    Método que agrega un hijo al árbol.
+    Entrada: El nodo hijo.
+    Salida: NA
+
+    '''
+
     def add_child(self, node):
         assert isinstance(node, Tree)
         self.children.append(node)
+    '''
+    Método que se da la ganancia.
+    Entrada: Número de ganacia.
+    Salida: NA
+
+    '''
 
     def set_gain(self, gain):
         self.gain = gain
+    '''
+    Método que obtiene el atributo name.
+    Entrada: NA
+    Salida: String Nombre
+    '''
 
     def get_name(self):
         return self.name
 
+    '''
+    Método que obtiene los hijos.
+    Entrada: NA
+    Salida: Conjunto de Hijos
+    '''
+
     def get_children(self):
         return self.children
+    '''
+    Método que da el total de hijo que tiene el árbol.
+    Entrada: NA
+    Salida: Entero con total de números de hijos.
+    '''
 
     def num_children(self):
         return len(self.children)
+    '''
+    Método que obtiene un hijo que tiene el árbol.
+    Entrada: NA
+    Salida: Nodos Hijos.
+    '''
 
     def get_child(self, name):
         for i in self.children:
             if(name == i.get_name()):
                 return i
         return None
+    '''
+    Método que elimina un hijo.
+    Entrada: Hijo a eliminar.
+    Salida: NA.
+    '''
 
     def delete_child(self, child):
         self.children.remove(child)
+    '''
+    Método que da las hojas.
+    Entrada: NA
+    Salida: Entero con total de números de hijos.
+    '''
 
     def get_leafs(self):
         votes = []
@@ -129,6 +184,11 @@ class Tree(object):
                 votes += [[i]]
 
         return Tree(votes, [])
+    '''
+    Imprime el Árbol.
+    Entrada: NA
+    Salida: Entero con total de números de hijos.
+    '''
 
     def printTree(self):
 
@@ -144,7 +204,11 @@ class Tree(object):
             print(
                 "---------------------------------------------------------------------")
 
-
+    '''
+    Prueba el modelo.
+    Entrada: Lista
+    Salida: Entero con total de números de hijos.
+    '''
 
     def test(self, test_list, attributes, expected):
         dic = {}
@@ -172,6 +236,11 @@ class Tree(object):
             name = self.name
             self.add_votes_test_result(name)
             return self.name
+    '''
+    Predice el valor según una muestra.
+    Entrada: una lista con los atributos y el valor esperado.
+    Salida: NA
+    '''
 
     def add_votes_test_result(self, name):
         if(isinstance(name, list)):
@@ -188,6 +257,11 @@ class Tree(object):
             self.votes_test_result = {}
             self.votes_test_result[name] = 1
 
+    '''
+    Calcula chi cuadrado.
+    Entrada: un diccionario con los datos del nodo.
+    Salida: Valor de Chi cuadrado.
+    '''
 
     def chi_square(self, data):
         desv = 0
@@ -205,6 +279,11 @@ class Tree(object):
                         desv += (n_k - pk)**2 / n_k
 
         return desv
+    '''
+    Método que poda el arbol con chi.
+    Entrada: threshold es el umbral de poda, conjunto de atributos, data conjunto de posibles valores de salida.
+    Salida: el chi de la poda.
+    '''
 
     def pruning_chi(self, threshold, attr, data):
         if (self.children == []):
@@ -224,18 +303,29 @@ class Tree(object):
                     break
             return p
 
+'''
+Método que cuenta los votos de un diccionario.
+Entrada: una lista con los atributos y el valor esperado.
+Salida: NA
+'''
+
 
 def count_votes_dic(votes):
     val = 0
     for i in votes.keys():
         val += votes.get(i)
     return val
+'''
+Crea el modelo árbol de decisión.
+Entrada: conjunto de atributos,
+Salida: NA
+'''
 
 
 def decision_tree_learning(examples, attributes, parent_examples):
-    #print(examples)
-    #print(attributes)
-    #print(parent_examples)
+    # print(examples)
+    # print(attributes)
+    # print(parent_examples)
 
     if not examples:
 
@@ -273,6 +363,12 @@ def decision_tree_learning(examples, attributes, parent_examples):
                 temp_tree.votes = count_votes_list(exs)
                 tree.add_child(temp_tree)
         return tree
+    return val
+'''
+Cuenta.
+Entrada: conjunto de atributos,
+Salida: NA
+'''
 
 
 def count_votes_list(examples):
@@ -286,6 +382,12 @@ def count_votes_list(examples):
 
     return dic
 
+'''
+Revisa si una lista de listas tienen el mismo tamaño.
+Entrada: conjunto de muestras.
+Salida: Booleano que dice si si o no tienen el mismo tamaño.
+'''
+
 
 def same_size(examples):
     size = len(examples[0])
@@ -293,6 +395,11 @@ def same_size(examples):
         if(len(i) != size):
             return False
     return True
+'''
+Revisa si una lista de listas tienen el mismo tamaño.
+Entrada: conjunto de muestras.
+Salida: Booleano que dice si si o no tienen el mismo tamaño.
+'''
 
 
 def get_examples_with_attribute(examples, value, column):
@@ -309,6 +416,11 @@ def get_examples_with_attribute(examples, value, column):
             exs += [j]
 
     return exs
+'''
+Obtiene el conjunto de atributos sin repetir.
+Entrada: conjunto de resultados.
+Salida: Valores posibles de salidas de resultados.
+'''
 
 
 def get_attribute(results):
@@ -317,6 +429,12 @@ def get_attribute(results):
 
         attributes.append(i[0])
     return list(set(attributes))
+
+'''
+Obtiene el atributo con mayor ganancia.
+Entrada: conjunto de muestras.
+Salida: tupla con la columna de mayor ganacia y la cantidad de ganacia.
+'''
 
 
 def importance(examples):
@@ -333,6 +451,11 @@ def importance(examples):
                 column = i
 
         return [column, max_gain]
+'''
+Obtiene la columna de resultado.
+Entrada: conjunto de muestras.
+Salida: tupla con la columna de mayor ganacia y la cantidad de ganacia.
+'''
 
 
 def get_column_result(examples, column):
@@ -343,12 +466,24 @@ def get_column_result(examples, column):
 
     return list_values
 
+'''
+Calculo de la entropia.
+Entrada: conjunto de porcentajes.
+Salida: valor de la entropia.
+'''
+
 
 def entropy(q):
     sum_q = 0
     for i in q:
         sum_q += i * log2(i)
     return sum_q * -1
+
+'''
+Calcula la sumatoria de la ganacia de los hijos.
+Entrada: atributo al cual se le va a sacar el remainder.
+Salida: sumatoria de la entropia.
+'''
 
 
 def remainder(attribute):
@@ -382,6 +517,11 @@ def remainder(attribute):
         sum_entropy += entropy_child
 
     return sum_entropy
+'''
+Contar la cantidad de votos por atributo.
+Entrada: Atributo con el resultado.
+Salida: Diccionario con la cantidad de votos.
+'''
 
 
 def get_count(attribute):
@@ -398,6 +538,12 @@ def get_count(attribute):
             dic.update(dic_temp)
     return dic
 
+'''
+Obtiene la probabilidad de un atributo por resultado.
+Entrada: Atributo con el resultado. .
+Salida: probabilidad de resultado en un diccionario .
+'''
+
 
 def get_prob(attribute):
     dic_count = get_count(attribute)
@@ -411,10 +557,21 @@ def get_prob(attribute):
         dic_temp.setdefault(key, prob)
     return dic_temp
 
+'''
+Obtiene la ganacia de un atributo especifico.
+Entrada: Atributo con el resultado. .
+Salida: .
+'''
+
 
 def gain(attribute):
 
     return entropy(list(get_prob(attribute).values())) - remainder(attribute)
+'''
+Revisa si un conjunto de muestras tiene la misma clasificacion.
+Entrada: Conjunto de muestras .
+Salida: Un booleano que dice si si o no tienen el mismo resultado.
+'''
 
 
 def same_classification(examples):
@@ -427,6 +584,11 @@ def same_classification(examples):
                 return True
             else:
                 return False
+'''
+Obtiene la clasificacion de un conjuntode muestras.
+Entrada: Conjunto de muestras.
+Salida: Lista con los resultado de las muestras.
+'''
 
 
 def classifications(examples):
@@ -439,12 +601,24 @@ def classifications(examples):
     # print(delete_duplicates(list_values))
     return delete_duplicates(list_values)
 
+'''
+Elimina duplicados de una lista.
+Entrada: Conjunto de valores en lista.
+Salida: Lista sin repetidos.
+'''
+
 
 def delete_duplicates(values):
     set_values = set(values)
 
     result = list(set_values)
     return result
+
+'''
+Obtiene la clasificacion con mayor presencia.
+Entrada: Conjunto de muestras.
+Salida: String con la mayor clasificación.
+'''
 
 
 def plurality_values(examples):
@@ -469,107 +643,14 @@ def plurality_values(examples):
     else:
         return random.choice(ties)
 
+'''
+Crea un arbol de decision
+Entrada: Conjunto de muestras, Conjunto de Atributos, Conjunto de salidas de resultados.
+Salida: Arbol de decision.
+'''
+
 
 def desition_tree(samples, attr, data):
 
     tree_test = decision_tree_learning(samples, attr, [])
-    '''
-	fail=0
-	win=0
-	for i in samples_pruning:
-		result=tree_test.test(i,attr,i[len(i)-1])
-		if(result[0]==i[len(i)-1]):
-			win+=1
-		else:
-			fail+=1
-
-	print("---------------------------------------------------------------------")
-	print("---------------------------------------------------------------------")
-	print("SIN PODADO")
-	print("---------------------------------------------------------------------")
-	print("ACERTADOS:"+str(win))
-	print("FALLADOS: "+str(fail))
-	print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
-	print("---------------------------------------------------------------------")
-	'''
     return (tree_test)
-
-'''
-# Our input list.
-values = [["Full","no"],["Full","no"],["Some","yes"],["Full","yes"],["Full","no"],["Some","yes"],["None","no"], ["Some","yes"],["Some","yes"],["Full","no"],["None","no"],["Full","yes"]]
-values2 = [["French","yes"],["French","no"],["Italian","yes"],["Italian","no"],["Thai","yes"],["Thai","yes"],["Thai","no"],["Thai","no"],["Burger","yes"],["Burger","yes"],["Burger","no"],["Burger","no"]]
-values3=[["Full","Thai","no"],["Full","French","no"],["Some","French","yes"],["Full","Thai","yes"],["Full","Italian","no"],["Some","Burger","yes"],["None","Burger","no"], ["Some","Italian","yes"],["Some","Thai","yes"],["Full","Burger","no"],["None","Thai","no"],["Full","Burger","yes"]]
-'''
-'''
-lenData = 6000
-samples = generar_muestra_pais(lenData)
-
-data=[]
-for i in samples:
-	data+=[i[len(i)-1]]
-data=list(set(data))
-
-
-
-lenData1 = 1000
-samples_pruning = generar_muestra_pais(lenData1)
-
-attr=[]
-for i in range(len(samples[0])-1):
-	attr+=["attr"+str(i)]
-
-tree_test=desition_tree(samples, attr, data)
-fail=0
-win=0
-for i in samples_pruning:
-    result=tree_test.test(i,attr,i[len(i)-1])
-    if(result[0]==i[len(i)-1]):
-        win+=1
-    else:
-        fail+=1
-print("ARBOL NO PODADO")
-# tree_test.printTree()
-print("---------------------------------------------------------------------")
-print("PODADO")
-print("---------------------------------------------------------------------")
-print("ACERTADOS:"+str(win))
-print("FALLADOS: "+str(fail))
-print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
-print("---------------------------------------------------------------------")
-tree_test.pruning_chi(0.2 , attr, data)
-
-
-fail=0
-win=0
-for i in samples_pruning:
-	result=tree_test.test(i,attr,i[len(i)-1])
-	if(result[0]==i[len(i)-1]):
-		win+=1
-	else:
-		fail+=1
-print("ARBOL PODADO")
-# tree_test.printTree()
-print("---------------------------------------------------------------------")
-print("PODADO")
-print("---------------------------------------------------------------------")
-print("ACERTADOS:"+str(win))
-print("FALLADOS: "+str(fail))
-print("ACCURACY: "+str((len(samples_pruning)-fail)/len(samples_pruning)*100))
-print("---------------------------------------------------------------------")
-'''
-'''
-nomalizer = Normalizer()
-lenData = 6000
-samples = generar_muestra_pais(lenData)
-samples_normalizer = nomalizer.separate_data_2(samples, 0.2)
-print(samples_normalizer)
-decisionTree = DecisionTree(0.2)
-decisionTree.train(samples_normalizer)
-tests=samples_normalizer["testingFeaturesFirst"].tolist()
-print(tests)
-for i in tests:
-    print(i)
-    print(decisionTree.classify(i))
-
-#)
-'''

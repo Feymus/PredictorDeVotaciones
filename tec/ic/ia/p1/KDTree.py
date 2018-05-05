@@ -14,65 +14,115 @@ import random
 
 class Kd_Tree():
 
+    '''
+    Metodo por default que inicializa la clase.
+    Entrada: neightboards es la cantidad de vecinos a tomar en cuenta.
+    Salida: NA.
+    '''
+
     def __init__(self, neightboards):
         self.tree = None
         self.r = None
         self.neightboards = neightboards
-        self.results=None
+        self.results = None
+    '''
+    Entrena el modelo.
+    Entrada: Conjunto de muestras.
+    Salida: NA
+    '''
 
     def train(self, samples):
         self.tree = None
         self.r = None
         self.results = copy.copy(samples.get('trainingClasses'))
-        samples2=copy.copy(samples.get('trainingFeatures'))
-        
-
+        samples2 = copy.copy(samples.get('trainingFeatures'))
 
         self.r = samples2
         self.tree = kd_trees(list(self.r), 0)
-     
-
+    '''
+    Clasifica una muestra segun el modelo.
+    Entrada: Muestra a evaluar.
+    Salida: Resultado de la clasificacion.
+    '''
 
     def classify(self, test):
-        
-        test=copy.copy(test[0])
+
+        test = copy.copy(test[0])
         mini_test = kdtree_closest_point(self.tree, test, 0, []).tolist()
-       
+
         neightboards = []
 
-        points=top_points(test, self.neightboards)
-    
+        points = top_points(test, self.neightboards)
+
         for j in points:
-            samples_list=self.r.tolist()
+            samples_list = self.r.tolist()
             pos = samples_list.index(j)
-        
+
             o = self.results.tolist()[pos]
             neightboards += [o]
-      
+
         return [best_vote_percent(neightboards)]
 
 
 class BinaryTree():
 
-    def __init__(self):
+   '''
+   Metodo por default que inicializa la clase.
+   Entrada: NA.
+   Salida: NA.
+   '''
+
+   def __init__(self):
         self.left = None
         self.right = None
         self.dimension = None
 
+
+    '''
+    Obtiene el hijo izquierdo del arbol.
+    Entrada: NA
+    Salida: Arbol del hijo izquierdo.
+    '''
+    
     def getLeftChild(self):
         return self.left
+    '''
+    Metodo por default que inicializa la clase.
+    Entrada: neightboards es la cantidad de vecinos a tomar en cuenta.
+    Salida: NA.
+    '''
 
     def getRightChild(self):
         return self.right
+    '''
+    Metodo que obtiene la dimension.
+    Entrada: NA
+    Salida: Número resultado de la dimension.
+    '''
 
     def getDimension(self):
         return self.dimension
+    '''
+    Valor del Nodo.
+    Entrada: Valor
+    Salida: NA
+    '''
 
     def setNodeValue(self, value):
         self.dimension = value
+    '''
+    Valor del Nodo.
+    Entrada: Valor
+    Salida: NA
+    '''
 
     def getNodeValue(self):
         return self.dimension
+    '''
+    Insertar nodo derecho del arbol.
+    Entrada: Arbol que representa el nuevo nodo.
+    Salida: NA
+    '''
 
     def insertRight(self, newNode):
         if self.right == None:
@@ -81,6 +131,11 @@ class BinaryTree():
             tree = BinaryTree(newNode)
             tree.right = self.right
             self.right = tree
+    '''
+    Insertar nodo izquierdo del arbol.
+    Entrada: Arbol que representa el nuevo nodo.
+    Salida: NA
+    '''
 
     def insertLeft(self, newNode):
         if self.left == None:
@@ -91,14 +146,26 @@ class BinaryTree():
             self.left = tree
 
 
+
+
+'''
+Imprime el árbol.
+Entrada: Arbol.
+Salida: NA
+'''
+
+
 def printTree(tree):
     if tree != None:
         printTree(tree.getLeftChild())
         print(tree.getNodeValue())
         printTree(tree.getRightChild())
 
-
-
+'''
+Crea el modelo kd_tree.
+Entrada: Conjunto de puntos, profundidad.
+Salida: Arbol
+'''
 
 
 def kd_trees(list_points, depth):
@@ -116,6 +183,11 @@ def kd_trees(list_points, depth):
         node.left = kd_trees(list_points[0:median], depth + 1)
         node.right = kd_trees(list_points[median + 1:], depth + 1)
         return node
+'''
+Calcula distancia entre puntos.
+Entrada: Punto 1 y Punto 2.
+Salida: Calculo de la distancia.
+'''
 
 
 def distance(point1, point2):
@@ -126,6 +198,12 @@ def distance(point1, point2):
         values += [d_temp * d_temp]
 
     return sqrt(sum(values))
+
+'''
+Obtiene el punto mas cercano.
+Entrada: Conjunto de Putos y Punto a evaluar.
+Salida: Punto mas cercano.
+'''
 
 
 def closest_point(all_points, new_point):
@@ -140,6 +218,12 @@ def closest_point(all_points, new_point):
             best_point = current_point
 
     return best_point
+
+'''
+Obtiene el punto mas cercano del arbol.
+Entrada: Arbol, Punto a evaluar, profundidad y mejor punto.
+Salida: Punto mas cercano.
+'''
 
 
 def kdtree_naive_closest_point(root, point, depth=0, best=None):
@@ -163,6 +247,12 @@ def kdtree_naive_closest_point(root, point, depth=0, best=None):
 
     return kdtree_naive_closest_point(next_branch, point, depth + 1, next_best)
 
+'''
+Compara entre dos puntos cual es el mas cercano a un punto especifico.
+Entrada: Punto base de comparacion, punto candidato 1 y punto candidato 2.
+Salida: Punto mas cercano.
+'''
+
 
 def closer_distance(pivot, p1, p2):
     if p1 is None:
@@ -180,6 +270,11 @@ def closer_distance(pivot, p1, p2):
         return p2
 
 kn_final = []
+'''
+Obtiene el punto mas cercano.
+Entrada: Arbol, punto a evaluas, profundidad, conjunto de puntos.
+Salida: Punto mas cercano.
+'''
 
 
 def kdtree_closest_point(root, point, depth=0, kn=[]):
@@ -218,6 +313,12 @@ def kdtree_closest_point(root, point, depth=0, kn=[]):
 
     return best
 
+'''
+Obtiene determinado numero de puntos mas cercanos
+Entrada: Punto y numero de puntos cercanos.
+Salida: Puntos mas cercano.
+'''
+
 
 def top_points(point, k):
     kn = copy.copy(kn_final)
@@ -240,6 +341,12 @@ def top_points(point, k):
 
     return points
 
+'''
+Obtiene el valor que mas aparece de un conjunto de puntos.
+Entrada: Conjunto de puntos
+Salida: El valor que mas aparecio en los puntos.
+'''
+
 
 def best_vote_percent(neightboards):
     temp_list = list(set(copy.copy(neightboards)))
@@ -252,102 +359,3 @@ def best_vote_percent(neightboards):
             votes = vote_temp
             best = i
     return best
-
-'''
-values3 = [
-    ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-        "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-    ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
-'''
-
-lenData = 100
-samples = generar_muestra_pais(lenData)
-
-normalizer = Normalizer()
-samples_normalizar = normalizer.prepare_data(samples, 0.2)
-'''
-r1 = samples_normalizar.get('trainingFeatures')
-r1_tests = samples_normalizar.get('testingFeatures')
-
-tree = Kd_Tree(3)
-tree.train(r1)
-print(r1_tests[0])
-for i in r1_tests:
-    print(tree.classify(i))
-    '''
-'''
-
-
-r1_tree=kd_trees(list(r1),0)
-fail=0
-win=0
-for i in r1_tests.tolist():
-    print(i)
-    mini_test=kdtree_closest_point(r1_tree,i,0,[]).tolist()
-
-
-    pos_test=r1_tests.tolist().index(i)
-    e=r1_tests_results.tolist()[pos_test]
-    neightboards=[]
-    print(r1)
-    for j in top_points(i,15):
-
-        pos=r1.tolist().index(j)
-        o=r1_results.tolist()[pos]
-
-        neightboards+=[o]
-
-
-    kn_final=[]
-    if (best_vote_percent(neightboards)==e):
-        win+=1
-    else:
-        fail+=1
-
-
-
-
-
-
-print(win)
-print(fail)
-print((len(r1_tests)-fail)/len(r1_tests)*100)
-
-'''
-'''
-r2=samples_normalizar.get('trainingFeaturesFirstInclude')
-r2_tests=samples_normalizar.get('testingFeaturesFirstInclude')
-r2_results=samples_normalizar.get('trainingClassesSecond')
-r2_tests_results=samples_normalizar.get('testingClassesSecond')
-
-
-r2_tree=kd_trees(list(r2),0)
-fail=0
-win=0
-
-for i in r2_tests.tolist():
-    #print(i)
-    mini_test=kdtree_closest_point(r2_tree,i,0,[]).tolist()
-
-
-    pos_test=r2_tests.tolist().index(i)
-    e=r2_tests_results.tolist()[pos_test]
-    neightboards=[]
-    for j in top_points(i,15):
-        pos=r2.tolist().index(j)
-        o=r2_results.tolist()[pos]
-
-        neightboards+=[o]
-
-
-    kn_final=[]
-    if (best_vote_percent(neightboards)==e):
-        win+=1
-    else:
-        fail+=1
-
-print(win)
-print(fail)
-print((len(r2_tests)-fail)/len(r2_tests)*100)
-
-'''
