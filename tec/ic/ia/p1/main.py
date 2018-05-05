@@ -528,16 +528,22 @@ def pruebas():
 
 def main(argv):
     print(argv)
-    if(len(argv)<6):
+    if(len(argv) < 6):
         print("\n     ***INSTRUCCIONES***\n")
-        print("     main.py --poblacion<poblacion> --porcentaje-pruebas <porcentaje>  bandera\n")
+        print(
+            "     main.py --poblacion<poblacion> --porcentaje-pruebas",
+            " <porcentaje>  bandera\n")
         print("     BANDERAS:\n")
         print("**   --provincia <provincia> | --pais")
         print("*    --regresion-logistica [--l1 o --l2] ")
-        print("*    --red-neuronal --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ? ")
+        print(
+            "*    --red-neuronal --numero-capas <numero> ",
+            "--unidades-por-capa <numero> --funcion-activacion ? ")
         print("*    --knn --k <numero de vecinos>")
         print("*    --arbol --umbral-poda <numero>")
-        print("*    --svm --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>\n")
+        print(
+            "*    --svm --kernel <linear, poly, rbf, sigmoid>",
+            " --C <numero> --Gamma <numero>\n")
     else:
         params = []
         method = argv[4]
@@ -546,45 +552,48 @@ def main(argv):
         if (method == "--pais"):
             params.append("PAIS")
 
-            if(argv[5]=="--regresion-logistica"):
+            if(argv[5] == "--regresion-logistica"):
                 print("REGRESION LOGISTICA")
-                if(len(argv)==7):
+                if(len(argv) == 7):
                     print(argv[6])
                 else:
                     print("ERROR: Parametros Incompletos")
                     print("Debe ingresar --l1 o --l2")
 
-            elif(argv[5]=="--red-neuronal"):
+            elif(argv[5] == "--red-neuronal"):
                 print("RED NEURONAL")
-                if(len(argv)==12):
+                if(len(argv) == 12):
                     print(argv[6])
                 else:
                     print("ERROR: Parametros Incompletos")
-                    print("Debe ingresar --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ?")
-            elif(argv[5]=="--knn"):
+                    print(
+                        "Debe ingresar --numero-capas <numero> ",
+                        "--unidades-por-capa <numero> --funcion-activacion ?")
+            elif(argv[5] == "--knn"):
                 print("KD-TREE")
-                if(len(argv)==8):
+                if(len(argv) == 8):
                     print(argv[7])
-                    neightboards=int(argv[7])
-                    kd_tree_classification(2, lenData, pctTest, params, neightboards)
+                    neightboards = int(argv[7])
+                    kd_tree_classification(
+                        2, lenData, pctTest, params, neightboards)
                 else:
                     print("ERROR: Parametros Incompletos")
                     print("Debe ingresar --k <numero de vecinos>")
-            elif(argv[5]=="--arbol"):
+            elif(argv[5] == "--arbol"):
                 print("ARBOL DE DECISION")
-                if(len(argv)==8):
+                if(len(argv) == 8):
                     print(argv[7])
-                    threshold=float(argv[7])
+                    threshold = float(argv[7])
                     desicion_tree(2, lenData, pctTest, params, threshold)
 
                 else:
                     print("ERROR: Parametros Incompletos")
                     print("Debe ingresar --umbral-poda <numero>")
 
-            elif(argv[5]=="--svm"):
+            elif(argv[5] == "--svm"):
                 print("SVM")
                 print(len(argv))
-                if(len(argv)==12):
+                if(len(argv) == 12):
                     # print(argv[5:])
                     k = argv[7]
                     c = float(argv[9])
@@ -592,56 +601,62 @@ def main(argv):
                         g = float(argv[11])
                     except ValueError:
                         g = argv[11]
-                    svm_classification(10, lenData, pctTest, params, C=c, gamma=g, kernel=k)
+                    svm_classification(
+                        10, lenData, pctTest, params, C=c, gamma=g, kernel=k)
 
                 else:
                     print("ERROR: Parametros Incompletos")
-                    print("Debe ingresar --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>")
+                    print(
+                        "Debe ingresar --kernel <linear, poly, rbf,",
+                        " sigmoid> --C <numero> --Gamma <numero>")
             else:
-                 print("ERROR: Bandera inexistente")
+                print("ERROR: Bandera inexistente")
         else:
             params.append("PROVINCIA")
             params.append(argv[5])
 
-            if(argv[6]=="--regresion-logistica"):
+            if(argv[6] == "--regresion-logistica"):
                 print("REGRESION LOGISTICA")
-                if(len(argv)==8):
+                if(len(argv) == 8):
                     print(argv[7])
                 else:
                     print("ERROR: Parametros Incompletos")
                     print("Debe ingresar --l1 o --l2")
 
-            elif(argv[6]=="--red-neuronal"):
+            elif(argv[6] == "--red-neuronal"):
                 print("RED NEURONAL")
-                if(len(argv)==13):
+                if(len(argv) == 13):
                     print(argv[7])
                 else:
                     print("ERROR: Parametros Incompletos")
-                    print("Debe ingresar --numero-capas <numero> --unidades-por-capa <numero> --funcion-activacion ?")
-            elif(argv[6]=="--knn"):
+                    print(
+                        "Debe ingresar --numero-capas <numero>",
+                        " --unidades-por-capa <numero> --funcion-activacion ?")
+            elif(argv[6] == "--knn"):
                 print("KD-TREE")
-                if(len(argv)==9):
+                if(len(argv) == 9):
                     print(argv[8])
-                    neightboards=int(argv[8])
-                    kd_tree_classification(2, lenData, pctTest, params, neightboards)
+                    neightboards = int(argv[8])
+                    kd_tree_classification(
+                        2, lenData, pctTest, params, neightboards)
                 else:
                     print("ERROR: Parametros Incompletos")
                     print("Debe ingresar --k <numero de vecinos>")
-            elif(argv[6]=="--arbol"):
+            elif(argv[6] == "--arbol"):
                 print("ARBOL DE DECISION")
-                if(len(argv)==9):
+                if(len(argv) == 9):
                     print(argv[8])
-                    threshold=float(argv[8])
+                    threshold = float(argv[8])
                     desicion_tree(2, lenData, pctTest, params, threshold)
 
                 else:
                     print("ERROR: Parametros Incompletos")
                     print("Debe ingresar --umbral-poda <numero>")
 
-            elif(argv[6]=="--svm"):
+            elif(argv[6] == "--svm"):
                 print("SVM")
                 print(len(argv))
-                if(len(argv)==13):
+                if(len(argv) == 13):
                     # print(argv[5:])
                     k = argv[8]
                     c = float(argv[10])
@@ -649,17 +664,17 @@ def main(argv):
                         g = float(argv[12])
                     except ValueError:
                         g = argv[12]
-                    svm_classification(10, lenData, pctTest, params, C=c, gamma=g, kernel=k)
+                    svm_classification(
+                        10, lenData, pctTest, params, C=c, gamma=g, kernel=k)
 
                 else:
                     print("ERROR: Parametros Incompletos")
-                    print("Debe ingresar --kernel <linear, poly, rbf, sigmoid> --C <numero> --Gamma <numero>")
+                    print(
+                        "Debe ingresar --kernel <linear, poly, rbf,",
+                        " sigmoid> --C <numero> --Gamma <numero>"
+                    )
             else:
-                 print("ERROR: Bandera inexistente")
-
-
-
-    #print(generar_muestra_pais(5))
+                print("ERROR: Bandera inexistente")
 
 
 if __name__ == '__main__':

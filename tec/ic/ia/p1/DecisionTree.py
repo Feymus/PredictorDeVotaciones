@@ -35,6 +35,7 @@ class DecisionTree():
     '''
 
     def train(self, samples):
+        print("######################################################")
         print(samples)
 
         array_samples = samples["trainingFeatures"].tolist()
@@ -68,7 +69,8 @@ class DecisionTree():
         print(test_sample)
         # print(self.tree.test(test_sample, self.attr,
         # test_sample[len(test_sample) - 1]))
-        return self.tree.test(test_sample, self.attr, test_sample[len(test_sample) - 1])
+        return self.tree.test(
+            test_sample, self.attr, test_sample[len(test_sample) - 1])
 
 
 class Tree(object):
@@ -91,7 +93,8 @@ class Tree(object):
             for child in children:
                 self.add_child(child)
     '''
-    Método de python que muestra como se va a representar la clase a la hora de imprimir.
+    Método de python que muestra como se va a representar la clase a la hora
+    de imprimir.
     Entrada: NA
     Salida: String con Nombre
     '''
@@ -99,7 +102,8 @@ class Tree(object):
     def __repr__(self):
         return str(self.name)
     '''
-    Método de python que muestra como se va a representar la clase a la hora de imprimir.
+    Método de python que muestra como se va a representar la clase a la hora
+    de imprimir.
     Entrada: NA.
     Salida: String con Nombre y Atributos.
     '''
@@ -178,7 +182,7 @@ class Tree(object):
 
     def get_leafs(self):
         votes = []
-        if(self.votes != None):
+        if(self.votes is not None):
             for i in self.votes.keys():
 
                 votes += [[i]]
@@ -194,7 +198,7 @@ class Tree(object):
 
         if(self.children != []):
             print(
-                "---------------------------------------------------------------------")
+                "------------------------------------------------------------")
 
             print(self)
             for i in self.children:
@@ -202,7 +206,7 @@ class Tree(object):
         else:
             print(self)
             print(
-                "---------------------------------------------------------------------")
+                "------------------------------------------------------------")
 
     '''
     Prueba el modelo.
@@ -217,7 +221,7 @@ class Tree(object):
             attr = test_list[position_attr]
             child = self.get_child(attr)
             valor = ['NULO']
-            if(child != None):
+            if(child is not None):
                 for i in child.children:
                     valor = i.test(test_list, attributes, expected)
                     if(i.children == []):
@@ -247,9 +251,9 @@ class Tree(object):
             name = name[0]
             if(isinstance(name, list)):
                 name = name[0]
-        if(self.votes_test_result != None):
+        if(self.votes_test_result is not None):
             count_values = self.votes_test_result.get(name)
-            if(count_values != None):
+            if(count_values is not None):
                 self.votes_test_result[name] = count_values + 1
             else:
                 self.votes_test_result[name] = 1
@@ -268,8 +272,9 @@ class Tree(object):
         for i in self.children:
             for j in data:
                 n_k = 0
-                if(i.votes_test_result != None):
-                    if(i.votes_test_result.get(j) != None and self.votes_test_result.get(j) != None):
+                if(i.votes_test_result is not None):
+                    if(i.votes_test_result.get(j) is not None and
+                            self.votes_test_result.get(j) is not None):
                         p = self.votes_test_result.get(j)
                         n = count_votes_dic(self.votes_test_result) - p
                         pk = i.votes_test_result.get(j)
@@ -281,7 +286,8 @@ class Tree(object):
         return desv
     '''
     Método que poda el arbol con chi.
-    Entrada: threshold es el umbral de poda, conjunto de atributos, data conjunto de posibles valores de salida.
+    Entrada: threshold es el umbral de poda, conjunto de atributos, data
+    conjunto de posibles valores de salida.
     Salida: el chi de la poda.
     '''
 
@@ -303,6 +309,7 @@ class Tree(object):
                     break
             return p
 
+
 '''
 Método que cuenta los votos de un diccionario.
 Entrada: una lista con los atributos y el valor esperado.
@@ -315,6 +322,8 @@ def count_votes_dic(votes):
     for i in votes.keys():
         val += votes.get(i)
     return val
+
+
 '''
 Crea el modelo árbol de decisión.
 Entrada: conjunto de atributos,
@@ -364,6 +373,8 @@ def decision_tree_learning(examples, attributes, parent_examples):
                 tree.add_child(temp_tree)
         return tree
     return val
+
+
 '''
 Cuenta.
 Entrada: conjunto de atributos,
@@ -382,6 +393,7 @@ def count_votes_list(examples):
 
     return dic
 
+
 '''
 Revisa si una lista de listas tienen el mismo tamaño.
 Entrada: conjunto de muestras.
@@ -395,6 +407,8 @@ def same_size(examples):
         if(len(i) != size):
             return False
     return True
+
+
 '''
 Revisa si una lista de listas tienen el mismo tamaño.
 Entrada: conjunto de muestras.
@@ -416,6 +430,8 @@ def get_examples_with_attribute(examples, value, column):
             exs += [j]
 
     return exs
+
+
 '''
 Obtiene el conjunto de atributos sin repetir.
 Entrada: conjunto de resultados.
@@ -429,6 +445,7 @@ def get_attribute(results):
 
         attributes.append(i[0])
     return list(set(attributes))
+
 
 '''
 Obtiene el atributo con mayor ganancia.
@@ -451,6 +468,8 @@ def importance(examples):
                 column = i
 
         return [column, max_gain]
+
+
 '''
 Obtiene la columna de resultado.
 Entrada: conjunto de muestras.
@@ -466,6 +485,7 @@ def get_column_result(examples, column):
 
     return list_values
 
+
 '''
 Calculo de la entropia.
 Entrada: conjunto de porcentajes.
@@ -479,6 +499,7 @@ def entropy(q):
         sum_q += i * log2(i)
     return sum_q * -1
 
+
 '''
 Calcula la sumatoria de la ganacia de los hijos.
 Entrada: atributo al cual se le va a sacar el remainder.
@@ -489,7 +510,7 @@ Salida: sumatoria de la entropia.
 def remainder(attribute):
     dic = {'total': len(attribute)}
     for i in attribute:
-        if (dic.get(i[0]) == None):
+        if (dic.get(i[0]) is None):
 
             dic_temp = {i[len(i) - 1]: 1}
 
@@ -499,7 +520,7 @@ def remainder(attribute):
             temp_dic = dic.get(i[0])
 
             temp_value = temp_dic.get(i[len(i) - 1])
-            if (temp_value == None):
+            if (temp_value is None):
                 dic_temp = {i[len(i) - 1]: 1}
 
             else:
@@ -517,6 +538,8 @@ def remainder(attribute):
         sum_entropy += entropy_child
 
     return sum_entropy
+
+
 '''
 Contar la cantidad de votos por atributo.
 Entrada: Atributo con el resultado.
@@ -528,7 +551,7 @@ def get_count(attribute):
     dic = {'total': len(attribute)}
     for i in attribute:
 
-        if (dic.get(i[len(i) - 1]) == None):
+        if (dic.get(i[len(i) - 1]) is None):
 
             dic.setdefault(i[len(i) - 1], 1)
         else:
@@ -537,6 +560,7 @@ def get_count(attribute):
             dic_temp = {i[len(i) - 1]: temp_value + 1}
             dic.update(dic_temp)
     return dic
+
 
 '''
 Obtiene la probabilidad de un atributo por resultado.
@@ -557,6 +581,7 @@ def get_prob(attribute):
         dic_temp.setdefault(key, prob)
     return dic_temp
 
+
 '''
 Obtiene la ganacia de un atributo especifico.
 Entrada: Atributo con el resultado. .
@@ -567,6 +592,8 @@ Salida: .
 def gain(attribute):
 
     return entropy(list(get_prob(attribute).values())) - remainder(attribute)
+
+
 '''
 Revisa si un conjunto de muestras tiene la misma clasificacion.
 Entrada: Conjunto de muestras .
@@ -584,6 +611,8 @@ def same_classification(examples):
                 return True
             else:
                 return False
+
+
 '''
 Obtiene la clasificacion de un conjuntode muestras.
 Entrada: Conjunto de muestras.
@@ -601,6 +630,7 @@ def classifications(examples):
     # print(delete_duplicates(list_values))
     return delete_duplicates(list_values)
 
+
 '''
 Elimina duplicados de una lista.
 Entrada: Conjunto de valores en lista.
@@ -613,6 +643,7 @@ def delete_duplicates(values):
 
     result = list(set_values)
     return result
+
 
 '''
 Obtiene la clasificacion con mayor presencia.
@@ -643,9 +674,11 @@ def plurality_values(examples):
     else:
         return random.choice(ties)
 
+
 '''
 Crea un arbol de decision
-Entrada: Conjunto de muestras, Conjunto de Atributos, Conjunto de salidas de resultados.
+Entrada: Conjunto de muestras, Conjunto de Atributos, Conjunto de salidas de
+resultados.
 Salida: Arbol de decision.
 '''
 

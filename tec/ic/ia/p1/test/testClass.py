@@ -44,7 +44,8 @@ class MyTest(unittest.TestCase):
 
     def test_closest_point(self):
         self.assertEqual(
-            closest_point([[0, 1, 2], [3, 4, 5], [6, 7, 8]], [3, 5, 5]), [3, 4, 5])
+            closest_point(
+                [[0, 1, 2], [3, 4, 5], [6, 7, 8]], [3, 5, 5]), [3, 4, 5])
 
     '''
     Prueba Unitario de la funcion closer_distance
@@ -130,9 +131,12 @@ class MyTest(unittest.TestCase):
 
     def test_importance(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
 
         self.assertEqual(importance(values3), [0, 0.5])
     '''
@@ -143,15 +147,19 @@ class MyTest(unittest.TestCase):
 
     def test_get_column_result(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         result = [
-            ['Full', 'no'], ['Full', 'no'], ['Some', 'yes'], [
-                'Full', 'yes'], ['Full', 'no'], ['Some', 'yes'],
-            ['None', 'no'], ['Some', 'yes'], ['Some', 'yes'], ['Full', 'no'], ['None', 'no'], ['Full', 'yes']]
+            ['Full', 'no'], ['Full', 'no'], ['Some', 'yes'], ['Full', 'yes'],
+            ['Full', 'no'], ['Some', 'yes'], ['None', 'no'], ['Some', 'yes'],
+            ['Some', 'yes'], ['Full', 'no'], ['None', 'no'], ['Full', 'yes']]
 
         self.assertEqual(get_column_result(values3, 0), result)
+
     '''
     Prueba Unitario de la funcion entropy
     Entrada: NA
@@ -169,9 +177,12 @@ class MyTest(unittest.TestCase):
 
     def test_remainder(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         attributes = get_column_result(values3, 0)
         self.assertEqual(remainder(attributes), 0.5)
     '''
@@ -182,13 +193,17 @@ class MyTest(unittest.TestCase):
 
     def test_get_count(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         attributes = get_column_result(values3, 0)
 
         self.assertEqual(
             get_count(attributes), {'total': 12, 'no': 6, 'yes': 6})
+
     '''
     Prueba Unitario de la funcion get_prob
     Entrada: NA
@@ -197,12 +212,16 @@ class MyTest(unittest.TestCase):
 
     def test_get_prob(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         attributes = get_column_result(values3, 0)
 
         self.assertEqual(get_prob(attributes), {'no': 0.5, 'yes': 0.5})
+
     '''
     Prueba Unitario de la funcion gain
     Entrada: NA
@@ -211,11 +230,15 @@ class MyTest(unittest.TestCase):
 
     def test_gain(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         attributes = get_column_result(values3, 0)
         self.assertEqual(gain(attributes), 0.5)
+
     '''
     Prueba Unitario de la funcion classifications
     Entrada: NA
@@ -224,11 +247,15 @@ class MyTest(unittest.TestCase):
 
     def test_classifications(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "yes"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "yes"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         examples = get_column_result(values3, 0)
         self.assertEqual(classifications(examples), ['no', 'yes'])
+
     '''
     Prueba Unitario de la funcion delete_duplicates
     Entrada: NA
@@ -237,6 +264,7 @@ class MyTest(unittest.TestCase):
 
     def test_delete_duplicates(self):
         self.assertEqual(delete_duplicates(["PAC", "PAC"]), ["PAC"])
+
     '''
     Prueba Unitario de la funcion plurality_values
     Entrada: NA
@@ -245,10 +273,14 @@ class MyTest(unittest.TestCase):
 
     def test_plurality_values(self):
         values3 = [
-            ["Full", "Thai", "no"], ["Full", "French", "no"], ["Some", "French", "no"], [
-                "Full", "Thai", "yes"], ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
-            ["None", "Burger", "no"], ["Some", "Italian", "yes"], ["Some", "Thai", "yes"], ["Full", "Burger", "no"], ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
+            ["Full", "Thai", "no"], ["Full", "French", "no"],
+            ["Some", "French", "no"], ["Full", "Thai", "yes"],
+            ["Full", "Italian", "no"], ["Some", "Burger", "yes"],
+            ["None", "Burger", "no"], ["Some", "Italian", "yes"],
+            ["Some", "Thai", "yes"], ["Full", "Burger", "no"],
+            ["None", "Thai", "no"], ["Full", "Burger", "yes"]]
         self.assertEqual(plurality_values(values3), "no")
+
 
 if __name__ == "__main__":
     unittest.main()
